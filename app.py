@@ -40,6 +40,69 @@ st.markdown("""
         padding: 15px;
         border-radius: 12px;
     }
+    /* Colorful background */
+.stApp {
+    background: linear-gradient(135deg, #f4f8ff 0%, #ffffff 45%, #f3f0ff 100%);
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #eaf3ff 0%, #f5f0ff 100%);
+    border-right: 1px solid #dbeafe;
+}
+
+/* Metric cards */
+div[data-testid="stMetric"] {
+    background: linear-gradient(135deg, #ffffff, #eaf4ff);
+    border: 1px solid #dbeafe;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+/* Movement when mouse goes over card */
+div[data-testid="stMetric"]:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 12px 28px rgba(37,99,235,0.18);
+}
+
+/* Buttons */
+.stButton > button {
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(37,99,235,0.30);
+    color: white;
+}
+
+/* Titles */
+h1, h2, h3 {
+    color: #172554;
+}
+
+/* Smooth page animation */
+.block-container {
+    animation: fadeIn 0.7s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>
 """, unsafe_allow_html=True)
 

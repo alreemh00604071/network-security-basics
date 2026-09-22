@@ -2,226 +2,220 @@ import streamlit as st
 import ipaddress
 import hashlib
 
+# =========================================================
+# PAGE SETUP
+# =========================================================
 st.set_page_config(
     page_title="Intertec | Network Security",
     page_icon="🛡️",
     layout="wide"
 )
 
-# =========================
+# =========================================================
 # DESIGN
-# =========================
+# =========================================================
 st.markdown("""
 <style>
 
-/* MAIN BACKGROUND */
+/* PAGE */
 .stApp {
     background:
-        radial-gradient(circle at 85% 10%, #dbeafe 0%, transparent 28%),
-        radial-gradient(circle at 65% 80%, #ede9fe 0%, transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(59,130,246,.20), transparent 25%),
+        radial-gradient(circle at 70% 80%, rgba(139,92,246,.16), transparent 30%),
         linear-gradient(135deg, #f8fbff 0%, #eef5ff 50%, #faf7ff 100%);
 }
 
-/* MAIN PAGE */
 .block-container {
-    padding-top: 1.2rem;
+    padding-top: 1.3rem;
     padding-bottom: 3rem;
-    animation: pageLoad 0.6s ease;
+    max-width: 1250px;
+    animation: fadeUp .55s ease;
 }
 
 /* SIDEBAR */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        180deg,
-        #eaf3ff 0%,
-        #f1efff 55%,
-        #e8f4ff 100%
-    );
-    border-right: 1px solid #cbdcf7;
-}
-
-section[data-testid="stSidebar"] > div {
-    padding-top: 1rem;
-}
-
-/* HEADINGS */
-h1 {
-    color: #102a56;
-    font-weight: 800;
-}
-
-h2, h3 {
-    color: #173b72;
-}
-
-/* HERO */
-.hero {
-    padding: 30px 35px;
-    border-radius: 24px;
-    margin-bottom: 24px;
-
     background:
-        radial-gradient(circle at 90% 20%, #2563eb 0%, transparent 35%),
-        linear-gradient(120deg, #071b46, #123d85 55%, #6039d9);
-
-    box-shadow: 0 15px 35px rgba(30, 64, 175, 0.20);
-    color: white;
-
-    position: relative;
-    overflow: hidden;
+        linear-gradient(180deg, #eaf3ff 0%, #eef2ff 50%, #f5f3ff 100%);
+    border-right: 1px solid #dbeafe;
 }
 
-.hero:after {
-    content: "";
-    position: absolute;
-    width: 240px;
-    height: 240px;
-    right: -70px;
-    bottom: -140px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.10);
+section[data-testid="stSidebar"] img {
+    background: white;
+    padding: 8px;
+    border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(15, 46, 90, .10);
 }
 
-.hero-small {
-    color: #bfdbfe;
-    font-size: 17px;
-    margin-bottom: 5px;
-}
-
-.hero-title {
-    color: white;
-    font-size: 38px;
-    font-weight: 800;
-    margin: 0;
-}
-
-.hero-text {
-    color: #dbeafe;
-    font-size: 18px;
-    margin-top: 8px;
-}
-
-/* STATUS CARDS */
-.status-card {
-    padding: 20px;
-    border-radius: 20px;
-    min-height: 130px;
-    border: 1px solid rgba(255,255,255,0.8);
-    box-shadow: 0 8px 22px rgba(30,64,175,0.10);
-    transition: 0.25s ease;
-}
-
-.status-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 30px rgba(30,64,175,0.18);
-}
-
-.green-card {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-}
-
-.blue-card {
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
-}
-
-.purple-card {
-    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-}
-
-.orange-card {
-    background: linear-gradient(135deg, #fff7ed, #ffedd5);
-}
-
-.status-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #334155;
-}
-
-.status-number {
-    font-size: 30px;
-    font-weight: 800;
-    color: #172554;
-    margin-top: 7px;
-}
-
-/* TOOL CARDS */
-.tool-card {
-    padding: 22px;
-    border-radius: 20px;
-    margin-bottom: 15px;
-    min-height: 155px;
-
-    background: rgba(255,255,255,0.82);
-    border: 1px solid rgba(219,234,254,0.95);
-
-    box-shadow: 0 8px 24px rgba(15, 46, 90, 0.08);
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.tool-card:hover {
-    transform: translateY(-7px) scale(1.01);
-    box-shadow: 0 15px 35px rgba(37,99,235,0.16);
-}
-
-.tool-title {
-    font-size: 19px;
-    font-weight: 800;
+/* TITLES */
+h1, h2, h3 {
     color: #102a56;
-}
-
-.tool-text {
-    color: #475569;
-    margin-top: 8px;
 }
 
 /* BUTTONS */
 .stButton > button {
     width: 100%;
+    min-height: 44px;
     border: 0;
-    border-radius: 13px;
-    padding: 0.65rem 1rem;
-
-    background: linear-gradient(
-        90deg,
-        #1677ff,
-        #6d4aff
-    );
-
+    border-radius: 14px;
     color: white;
     font-weight: 700;
-
-    box-shadow: 0 6px 18px rgba(37,99,235,0.20);
-
-    transition: 0.25s ease;
+    background: linear-gradient(90deg, #1677ff, #7047eb);
+    box-shadow: 0 7px 18px rgba(37,99,235,.22);
+    transition: all .25s ease;
 }
 
 .stButton > button:hover {
     color: white;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(109,74,255,0.30);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(109,74,255,.32);
 }
 
-/* INPUTS */
-div[data-baseweb="input"] {
-    border-radius: 12px;
+/* METRICS */
+div[data-testid="stMetric"] {
+    background: rgba(255,255,255,.80);
+    border: 1px solid rgba(255,255,255,.95);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 9px 25px rgba(30,64,175,.10);
+    transition: all .25s ease;
 }
 
-/* INFO BOXES */
+div[data-testid="stMetric"]:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(37,99,235,.18);
+}
+
+/* NORMAL STREAMLIT BOXES */
 div[data-testid="stAlert"] {
-    border-radius: 15px;
+    border-radius: 17px;
 }
 
-/* PAGE ANIMATION */
-@keyframes pageLoad {
+/* INPUT */
+div[data-baseweb="input"] {
+    border-radius: 14px;
+}
+
+/* HERO */
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    border-radius: 25px;
+    background:
+        radial-gradient(circle at 88% 25%, rgba(59,130,246,.75), transparent 27%),
+        linear-gradient(115deg, #071b46 0%, #123d85 58%, #7047eb 100%);
+    box-shadow: 0 16px 38px rgba(30,64,175,.25);
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    right: -65px;
+    bottom: -140px;
+    background: rgba(255,255,255,.11);
+}
+
+.hero-company {
+    color: #bfdbfe;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.hero-title {
+    color: white;
+    font-size: 40px;
+    line-height: 1.15;
+    font-weight: 800;
+    margin-top: 8px;
+}
+
+.hero-subtitle {
+    color: #dbeafe;
+    font-size: 19px;
+    margin-top: 8px;
+}
+
+.hero-tags {
+    color: #bfdbfe;
+    font-size: 14px;
+    margin-top: 22px;
+}
+
+/* CARDS */
+.card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(255,255,255,.95);
+    border-radius: 20px;
+    padding: 21px;
+    min-height: 145px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 24px rgba(15,46,90,.09);
+    transition: all .25s ease;
+}
+
+.card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 16px 32px rgba(37,99,235,.17);
+}
+
+.card-blue {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.card-green {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+}
+
+.card-purple {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+}
+
+.card-orange {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+}
+
+.card-pink {
+    background: linear-gradient(135deg, #fff1f2, #fce7f3);
+}
+
+.card-cyan {
+    background: linear-gradient(135deg, #ecfeff, #cffafe);
+}
+
+.card-title {
+    color: #102a56;
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.card-text {
+    color: #475569;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+/* FOOTER */
+.footer-box {
+    margin-top: 25px;
+    padding: 22px;
+    border-radius: 20px;
+    color: white;
+    background: linear-gradient(100deg, #102a56, #164e9c, #6339d7);
+    box-shadow: 0 10px 25px rgba(30,64,175,.18);
+}
+
+/* ANIMATION */
+@keyframes fadeUp {
     from {
         opacity: 0;
         transform: translateY(12px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -232,11 +226,39 @@ div[data-testid="stAlert"] {
 """, unsafe_allow_html=True)
 
 
-# =========================
-# SIDEBAR
-# =========================
+# =========================================================
+# HELPER FUNCTIONS
+# =========================================================
+def hero(title, subtitle):
+    html = (
+        '<div class="hero">'
+        '<div class="hero-company">INTERTEC SYSTEMS LLC</div>'
+        f'<div class="hero-title">{title}</div>'
+        f'<div class="hero-subtitle">{subtitle}</div>'
+        '<div class="hero-tags">'
+        '🛡️ Network Security &nbsp;&nbsp; '
+        '📡 Traffic Analysis &nbsp;&nbsp; '
+        '🔐 Secure Infrastructure'
+        '</div>'
+        '</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
 
-st.sidebar.image("intertec_systems_logo.jpg", width=150)
+
+def card(icon, title, text, color):
+    html = (
+        f'<div class="card {color}">'
+        f'<div class="card-title">{icon} {title}</div>'
+        f'<div class="card-text">{text}</div>'
+        '</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
+
+
+# =========================================================
+# SIDEBAR
+# =========================================================
+st.sidebar.image("intertec_systems_logo.jpg", width=145)
 
 st.sidebar.markdown("## 🛡️ Security Console")
 
@@ -255,166 +277,115 @@ option = st.sidebar.radio(
 )
 
 st.sidebar.divider()
-
 st.sidebar.markdown("### 🔐 Network Security")
 st.sidebar.caption("INTERTEC SYSTEMS LLC")
 st.sidebar.caption("Network Security Basics Project")
 
 
-# =========================
+# =========================================================
 # DASHBOARD
-# =========================
-
+# =========================================================
 if option == "🏠 Dashboard":
 
-    st.markdown("""
-    <div class="hero">
+    hero(
+        "🛡️ Network Security Suite",
+        "Monitor. Analyze. Protect."
+    )
 
-        <div class="hero-small">
-            INTERTEC SYSTEMS LLC
-        </div>
-
-        <div class="hero-title">
-            🛡️ Network Security Suite
-        </div>
-
-        <div class="hero-text">
-            Monitor. Analyze. Protect.
-        </div>
-
-        <br>
-
-        <div style="color:#bfdbfe;">
-            Network Security • Traffic Analysis • Secure Infrastructure
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    # STATUS CARDS
+    # STATUS
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        st.markdown("""
-        <div class="status-card green-card">
-            <div class="status-title">🧰 SECURITY TOOLS</div>
-            <div class="status-number">7</div>
-            <div>Available tools</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric("🧰 Security Tools", "7", "Available")
 
     with c2:
-        st.markdown("""
-        <div class="status-card blue-card">
-            <div class="status-title">📡 TRAFFIC ANALYSIS</div>
-            <div class="status-number">Wireshark</div>
-            <div>TCP • DNS • TLS</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric("📡 Traffic Analysis", "Wireshark", "Local testing")
 
     with c3:
-        st.markdown("""
-        <div class="status-card purple-card">
-            <div class="status-title">🛡️ FIREWALL</div>
-            <div class="status-number">Demo</div>
-            <div>pfSense rules</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric("🛡️ Firewall", "pfSense", "Demo")
 
     with c4:
-        st.markdown("""
-        <div class="status-card orange-card">
-            <div class="status-title">🔎 NETWORK SCAN</div>
-            <div class="status-number">Nmap</div>
-            <div>Local testing completed</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric("🔎 Network Scan", "Nmap", "Local testing")
 
     st.write("")
-    st.markdown("## 🔐 Security Tools")
+    st.markdown("## 🛡️ Security Tools")
 
-    # ROW 1
-    col1, col2, col3 = st.columns(3)
+    # FIRST ROW
+    c1, c2, c3 = st.columns(3)
 
-    with col1:
-        st.markdown("""
-        <div class="tool-card">
-            <div class="tool-title">🔎 Network Scan</div>
-            <div class="tool-text">
-                Identify open ports and running services using Nmap.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    with c1:
+        card(
+            "🔎",
+            "Network Scan",
+            "Identify open ports and running services using Nmap.",
+            "card-blue"
+        )
 
-    with col2:
-        st.markdown("""
-        <div class="tool-card">
-            <div class="tool-title">📡 Traffic Monitoring</div>
-            <div class="tool-text">
-                Review TCP, DNS and TLS traffic using Wireshark.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    with c2:
+        card(
+            "📡",
+            "Traffic Monitoring",
+            "Review TCP, DNS and TLS network traffic using Wireshark.",
+            "card-green"
+        )
 
-    with col3:
-        st.markdown("""
-        <div class="tool-card">
-            <div class="tool-title">🛡️ Firewall</div>
-            <div class="tool-text">
-                Demonstrate secure firewall rules using pfSense.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    with c3:
+        card(
+            "🛡️",
+            "Firewall",
+            "Review secure firewall rules using a pfSense demonstration.",
+            "card-pink"
+        )
 
-    # ROW 2
-    col4, col5, col6 = st.columns(3)
+    # SECOND ROW
+    c4, c5, c6 = st.columns(3)
 
-    with col4:
-        st.markdown("""
-        <div class="tool-card">
-            <div class="tool-title">⚠️ Vulnerability Check</div>
-            <div class="tool-text">
-                Review potential security risks and recommendations.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    with c4:
+        card(
+            "⚠️",
+            "Vulnerability Check",
+            "Review potential security risks and recommendations.",
+            "card-orange"
+        )
 
-    with col5:
-        st.markdown("""
-        <div class="tool-card">
-            <div class="tool-title">🌐 IP Tools</div>
-            <div class="tool-text">
-                Validate IPv4 and IPv6 addresses.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    with c5:
+        card(
+            "🌐",
+            "IP Tools",
+            "Validate IPv4 and IPv6 addresses and identify their type.",
+            "card-purple"
+        )
 
-    with col6:
-        st.markdown("""
-        <div class="tool-card">
-            <div class="tool-title">🔑 Password & Hash Tools</div>
-            <div class="tool-text">
-                Check password strength and generate SHA-256 hashes.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    with c6:
+        card(
+            "🔑",
+            "Password & Hash Tools",
+            "Check password strength and generate SHA-256 hashes.",
+            "card-cyan"
+        )
 
-    st.info(
-        "📄 Security Report — Review the project findings "
-        "and security recommendations."
+    st.markdown(
+        '<div class="footer-box">'
+        '<b>🔐 Network Security Basics</b><br>'
+        'Learn to detect risks, protect network services, '
+        'and apply security recommendations.'
+        '</div>',
+        unsafe_allow_html=True
     )
 
 
-# =========================
+# =========================================================
 # NETWORK SCAN
-# =========================
-
+# =========================================================
 elif option == "🔎 Network Scan":
 
-    st.title("🔎 Network Scan")
+    hero(
+        "🔎 Network Scan",
+        "Review open ports and running services."
+    )
 
     st.info(
-        "Nmap is used to identify open ports and running services."
+        "Tool: Nmap — Real Nmap testing was completed locally."
     )
 
     target = st.text_input(
@@ -427,7 +398,7 @@ elif option == "🔎 Network Scan":
         st.success("Demo scan completed.")
 
         st.code(
-f"""Target: {target}
+            f"""Target: {target}
 
 135/tcp   open   msrpc
 445/tcp   open   microsoft-ds
@@ -435,90 +406,107 @@ f"""Target: {target}
 912/tcp   open   vmware-auth"""
         )
 
-    st.caption(
-        "Real Nmap testing was completed locally. "
+    st.warning(
         "Only scan systems you own or have permission to test."
     )
 
 
-# =========================
+# =========================================================
 # TRAFFIC MONITORING
-# =========================
-
+# =========================================================
 elif option == "📡 Traffic Monitoring":
 
-    st.title("📡 Traffic Monitoring")
+    hero(
+        "📡 Traffic Monitoring",
+        "Analyze network traffic using Wireshark."
+    )
 
     st.info(
-        "Wireshark was used locally to capture and review network traffic."
+        "Wireshark testing was completed locally."
     )
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.markdown("""
-        <div class="status-card blue-card">
-            <div class="status-title">TCP</div>
-            <div class="status-number">tcp</div>
-            <div>Connection traffic</div>
-        </div>
-        """, unsafe_allow_html=True)
+        card(
+            "🔵",
+            "TCP",
+            "Review TCP connections and communication.",
+            "card-blue"
+        )
 
     with c2:
-        st.markdown("""
-        <div class="status-card green-card">
-            <div class="status-title">DNS</div>
-            <div class="status-number">dns</div>
-            <div>DNS queries</div>
-        </div>
-        """, unsafe_allow_html=True)
+        card(
+            "🟢",
+            "DNS",
+            "Review DNS queries and domain requests.",
+            "card-green"
+        )
 
     with c3:
-        st.markdown("""
-        <div class="status-card purple-card">
-            <div class="status-title">TLS</div>
-            <div class="status-number">tls</div>
-            <div>Encrypted traffic</div>
-        </div>
-        """, unsafe_allow_html=True)
+        card(
+            "🟣",
+            "TLS",
+            "Review encrypted TLS network traffic.",
+            "card-purple"
+        )
 
-    if st.button("Show Wireshark Filters"):
-        st.code("""tcp
-dns
-tls""")
+    if st.button("📡 Show Wireshark Filters"):
+        st.code("tcp\ndns\ntls")
 
 
-# =========================
+# =========================================================
 # FIREWALL
-# =========================
-
+# =========================================================
 elif option == "🛡️ Firewall":
 
-    st.title("🛡️ Firewall Security")
+    hero(
+        "🛡️ Firewall Security",
+        "Review secure network access rules."
+    )
 
-    st.warning("pfSense section — Demonstration")
+    st.warning("Tool: pfSense — Demonstration")
 
-    st.success("✅ ALLOW HTTPS — Port 443")
-    st.success("✅ ALLOW DNS — Port 53")
-    st.error("🚫 BLOCK Telnet — Port 23")
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        card(
+            "✅",
+            "HTTPS",
+            "ALLOW — Port 443",
+            "card-green"
+        )
+
+    with c2:
+        card(
+            "✅",
+            "DNS",
+            "ALLOW — Port 53",
+            "card-blue"
+        )
+
+    with c3:
+        card(
+            "🚫",
+            "Telnet",
+            "BLOCK — Port 23",
+            "card-pink"
+        )
 
     st.info(
-        "This demonstrates how firewall rules can allow "
+        "These rules demonstrate how a firewall can allow "
         "required services and block insecure services."
     )
 
 
-# =========================
+# =========================================================
 # VULNERABILITY CHECK
-# =========================
-
+# =========================================================
 elif option == "⚠️ Vulnerability Check":
 
-    st.title("⚠️ Vulnerability Check")
-
-    st.write(
-        "Review potential network security findings "
-        "and recommended controls."
+    hero(
+        "⚠️ Vulnerability Check",
+        "Review potential network security risks."
     )
 
     if st.button("🔍 Run Demo Check"):
@@ -526,22 +514,25 @@ elif option == "⚠️ Vulnerability Check":
         st.warning(
             "Port 445 — File sharing service may be exposed."
         )
-        st.write(
-            "🛡️ Recommendation: Restrict access to trusted devices."
+
+        st.success(
+            "Recommendation: Restrict access to trusted devices."
         )
 
         st.warning(
             "Telnet Port 23 — Unencrypted remote access."
         )
-        st.write(
-            "🛡️ Recommendation: Block Telnet and use SSH."
+
+        st.success(
+            "Recommendation: Block Telnet and use SSH."
         )
 
         st.warning(
             "HTTP Port 80 — Unencrypted web traffic."
         )
-        st.write(
-            "🛡️ Recommendation: Use HTTPS/TLS."
+
+        st.success(
+            "Recommendation: Use HTTPS/TLS."
         )
 
         st.info(
@@ -550,16 +541,14 @@ elif option == "⚠️ Vulnerability Check":
         )
 
 
-# =========================
+# =========================================================
 # IP TOOLS
-# =========================
-
+# =========================================================
 elif option == "🌐 IP Tools":
 
-    st.title("🌐 IP Address Analyzer")
-
-    st.write(
-        "Validate an IPv4 or IPv6 address and identify its type."
+    hero(
+        "🌐 IP Address Analyzer",
+        "Validate IPv4 and IPv6 addresses."
     )
 
     ip_input = st.text_input(
@@ -570,7 +559,6 @@ elif option == "🌐 IP Tools":
     if st.button("🌐 Analyze IP"):
 
         try:
-
             address = ipaddress.ip_address(ip_input.strip())
 
             st.success("✅ Valid IP Address")
@@ -584,17 +572,16 @@ elif option == "🌐 IP Tools":
                 )
 
             with c2:
+                network_type = (
+                    "Private"
+                    if address.is_private
+                    else "Public"
+                )
 
-                if address.is_private:
-                    st.metric(
-                        "Network Type",
-                        "Private"
-                    )
-                else:
-                    st.metric(
-                        "Network Type",
-                        "Public"
-                    )
+                st.metric(
+                    "Network Type",
+                    network_type
+                )
 
             with c3:
                 st.metric(
@@ -603,28 +590,24 @@ elif option == "🌐 IP Tools":
                 )
 
         except ValueError:
-
             st.error(
                 "❌ Invalid IP address. "
                 "Enter a valid IPv4 or IPv6 address."
             )
 
 
-# =========================
-# PASSWORD TOOLS
-# =========================
-
+# =========================================================
+# PASSWORD & HASH
+# =========================================================
 elif option == "🔑 Password & Hash Tools":
 
-    st.title("🔑 Password & Hash Tools")
-
-    st.write(
-        "Check password strength and generate a SHA-256 hash."
+    hero(
+        "🔑 Password & Hash Tools",
+        "Test password strength and SHA-256 hashing."
     )
 
     st.warning(
-        "Use a sample password only. "
-        "Do not enter your real password."
+        "Use a sample password only — do not enter your real password."
     )
 
     password = st.text_input(
@@ -639,13 +622,9 @@ elif option == "🔑 Password & Hash Tools":
         if st.button("🔐 Check Password Strength"):
 
             if not password:
-
-                st.warning(
-                    "Enter a sample password first."
-                )
+                st.warning("Enter a sample password first.")
 
             else:
-
                 score = 0
 
                 if len(password) >= 8:
@@ -664,100 +643,98 @@ elif option == "🔑 Password & Hash Tools":
                     score += 1
 
                 if score <= 2:
-                    st.error(
-                        "🔴 Password Strength: Weak"
-                    )
+                    st.error("🔴 Password Strength: Weak")
 
                 elif score <= 4:
-                    st.warning(
-                        "🟠 Password Strength: Medium"
-                    )
+                    st.warning("🟠 Password Strength: Medium")
 
                 else:
-                    st.success(
-                        "🟢 Password Strength: Strong"
-                    )
+                    st.success("🟢 Password Strength: Strong")
 
     with c2:
 
         if st.button("🔑 Generate SHA-256 Hash"):
 
             if not password:
-
-                st.warning(
-                    "Enter a sample password first."
-                )
+                st.warning("Enter a sample password first.")
 
             else:
-
                 hashed_password = hashlib.sha256(
                     password.encode()
                 ).hexdigest()
 
-                st.success(
-                    "SHA-256 Hash Generated"
-                )
-
+                st.success("SHA-256 Hash Generated")
                 st.code(hashed_password)
 
 
-# =========================
+# =========================================================
 # SECURITY REPORT
-# =========================
-
+# =========================================================
 elif option == "📄 Security Report":
 
-    st.title("📄 Security Report")
-
-    st.markdown("""
-    <div class="hero">
-        <div class="hero-small">
-            INTERTEC SYSTEMS LLC
-        </div>
-
-        <div class="hero-title">
-            Network Security Basics
-        </div>
-
-        <div class="hero-text">
-            Security findings and recommendations
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.subheader("🔎 Network Scan")
-    st.write(
-        "Nmap — Identify open ports and running services."
+    hero(
+        "📄 Security Report",
+        "Project findings and security recommendations."
     )
 
-    st.subheader("📡 Traffic Monitoring")
-    st.write(
-        "Wireshark — Review TCP, DNS and TLS traffic."
-    )
+    c1, c2 = st.columns(2)
 
-    st.subheader("🛡️ Firewall")
-    st.write(
-        "pfSense — Firewall rule demonstration."
-    )
+    with c1:
 
-    st.subheader("🌐 IP Tools")
-    st.write(
-        "Validate IPv4 and IPv6 addresses."
-    )
+        card(
+            "🔎",
+            "Network Scan",
+            "Nmap was used locally to identify open ports "
+            "and running services.",
+            "card-blue"
+        )
 
-    st.subheader("🔑 Password Security")
-    st.write(
-        "Password strength and SHA-256 demonstration."
-    )
+        card(
+            "🛡️",
+            "Firewall",
+            "pfSense firewall rules are presented "
+            "as a demonstration.",
+            "card-pink"
+        )
 
-    st.subheader("🛡️ Security Recommendations")
+        card(
+            "🔑",
+            "Password Security",
+            "Password strength and SHA-256 hashing demonstration.",
+            "card-purple"
+        )
 
-    st.success("Use HTTPS/TLS for secure communication.")
-    st.success("Block Telnet and use SSH.")
-    st.success("Restrict unnecessary open ports.")
-    st.success("Apply appropriate firewall rules.")
-    st.success("Monitor network traffic regularly.")
-    st.success("Use strong passwords.")
+    with c2:
+
+        card(
+            "📡",
+            "Traffic Monitoring",
+            "Wireshark was used locally with TCP, DNS and TLS filters.",
+            "card-green"
+        )
+
+        card(
+            "🌐",
+            "IP Tools",
+            "IPv4 and IPv6 address validation.",
+            "card-cyan"
+        )
+
+        card(
+            "⚠️",
+            "Security Findings",
+            "Potential risks are reviewed with security recommendations.",
+            "card-orange"
+        )
+
+    st.markdown("## 🛡️ Recommendations")
+
+    st.success("✅ Use HTTPS/TLS for secure communication.")
+    st.success("✅ Block Telnet and use SSH.")
+    st.success("✅ Restrict unnecessary open ports.")
+    st.success("✅ Apply appropriate firewall rules.")
+    st.success("✅ Monitor network traffic regularly.")
+    st.success("✅ Use strong passwords.")
 
     st.info(
         "Nmap and Wireshark testing was completed locally. "

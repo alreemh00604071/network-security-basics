@@ -9,6 +9,7 @@ st.set_page_config(
 )
 
 # ---------- HEADER ----------
+st.image("intertec_systems_logo.jpg", width=220)
 st.title("🔐 Network Security Basics Dashboard")
 st.write(
     "A simple and user-friendly dashboard for network security "

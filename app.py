@@ -3,26 +3,71 @@ import ipaddress
 import hashlib
 
 st.set_page_config(
-    page_title="Network Security Basics",
-    page_icon="🔐",
+    page_title="Intertec | Network Security",
+    page_icon="🛡️",
     layout="wide"
 )
 
-# ---------- HEADER ----------
-st.image("intertec_systems_logo.jpg", width=220)
-st.title("🔐 Network Security Basics Dashboard")
-st.write(
-    "A simple and user-friendly dashboard for network security "
-    "tools, testing, and recommendations."
-)
+# ---------- STYLE ----------
+st.markdown("""
+<style>
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+    }
+
+    .company-name {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 0px;
+    }
+
+    .system-name {
+        font-size: 15px;
+        color: #666;
+        margin-top: 0px;
+    }
+
+    .header-line {
+        border-bottom: 1px solid #e6e6e6;
+        margin-top: 10px;
+        margin-bottom: 25px;
+    }
+
+    div[data-testid="stMetric"] {
+        background: #f7f9fc;
+        border: 1px solid #e5e7eb;
+        padding: 15px;
+        border-radius: 12px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ---------- COMPANY HEADER ----------
+logo_col, name_col = st.columns([1, 5])
+
+with logo_col:
+    st.image("intertec_systems_logo.jpg", width=120)
+
+with name_col:
+    st.markdown(
+        '<p class="company-name">INTERTEC SYSTEMS LLC</p>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<p class="system-name">Network Security Basics</p>',
+        unsafe_allow_html=True
+    )
+
+st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
 
 # ---------- SIDEBAR ----------
-st.sidebar.title("🛡️ Security Tools")
+st.sidebar.title("🛡️ Security Console")
 
 option = st.sidebar.radio(
-    "Select a Tool",
+    "Navigation",
     [
-        "🏠 Home",
+        "🏠 Dashboard",
         "🔎 Network Scan",
         "📡 Traffic Monitoring",
         "🛡️ Firewall",
@@ -33,16 +78,30 @@ option = st.sidebar.radio(
     ]
 )
 
-# ---------- HOME ----------
-if option == "🏠 Home":
-    st.header("Welcome 👋")
+st.sidebar.divider()
+st.sidebar.caption("INTERTEC SYSTEMS LLC")
+st.sidebar.caption("Network Security Basics")
 
+# ---------- DASHBOARD ----------
+if option == "🏠 Dashboard":
+
+    st.title("Security Dashboard")
     st.write(
-        "This dashboard demonstrates basic network security tools "
-        "and security recommendations."
+        "Monitor and review basic network security tools from one dashboard."
     )
 
-    st.subheader("Available Security Tools")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Security Tools", "7")
+
+    with col2:
+        st.metric("Monitoring", "Active")
+
+    with col3:
+        st.metric("Environment", "Demo")
+
+    st.subheader("Security Tools")
 
     col1, col2 = st.columns(2)
 
@@ -56,19 +115,13 @@ if option == "🏠 Home":
         st.info("""
         🛡️ **Firewall**
 
-        Review basic firewall rules and secure network access.
+        Review firewall rules and network access controls.
         """)
 
         st.info("""
         🌐 **IP Tools**
 
         Validate IPv4 and IPv6 addresses.
-        """)
-
-        st.info("""
-        📄 **Security Report**
-
-        Review security findings and recommendations.
         """)
 
     with col2:
@@ -81,7 +134,7 @@ if option == "🏠 Home":
         st.info("""
         ⚠️ **Vulnerability Check**
 
-        Review potential security risks and recommendations.
+        Review potential network security risks.
         """)
 
         st.info("""
@@ -92,13 +145,13 @@ if option == "🏠 Home":
 
 # ---------- NETWORK SCAN ----------
 elif option == "🔎 Network Scan":
-    st.header("🔎 Network Scan")
 
-    st.write("**Tool:** Nmap")
-    st.write("**Purpose:** Identify open ports and running services.")
+    st.header("🔎 Network Scan")
+    st.write("Tool: **Nmap**")
+    st.write("Identify open ports and running services.")
 
     target = st.text_input(
-        "Enter Target IP Address",
+        "Target IP Address",
         "127.0.0.1"
     )
 
@@ -106,16 +159,12 @@ elif option == "🔎 Network Scan":
         st.success("Demo scan completed.")
 
         st.code(
-            f"""Target: {target}
-
-Example Scan Results:
+f"""Target: {target}
 
 135/tcp   open   msrpc
 445/tcp   open   microsoft-ds
 902/tcp   open   vmware-auth
-912/tcp   open   vmware-auth
-
-Note: This online version displays demonstration results."""
+912/tcp   open   vmware-auth"""
         )
 
     st.caption(
@@ -123,211 +172,194 @@ Note: This online version displays demonstration results."""
         "Only scan systems you own or have permission to test."
     )
 
-# ---------- TRAFFIC MONITORING ----------
+# ---------- TRAFFIC ----------
 elif option == "📡 Traffic Monitoring":
+
     st.header("📡 Traffic Monitoring")
+    st.write("Tool: **Wireshark**")
+    st.write("Review network traffic and common protocols.")
 
-    st.write("**Tool:** Wireshark")
-    st.write("**Purpose:** Capture and analyze network packets.")
+    col1, col2, col3 = st.columns(3)
 
-    if st.button("Show Traffic Information"):
-        st.success("Traffic monitoring information displayed.")
+    with col1:
+        st.metric("TCP", "Monitored")
 
-        st.subheader("Useful Wireshark Filters")
+    with col2:
+        st.metric("DNS", "Monitored")
 
-        st.code(
-            """tcp
+    with col3:
+        st.metric("TLS", "Monitored")
+
+    if st.button("Show Wireshark Filters"):
+        st.code("""tcp
 dns
-tls"""
-        )
+tls""")
 
-        st.write(
-            "These filters can be used to review TCP connections, "
-            "DNS queries, and encrypted TLS traffic."
-        )
+        st.success("Traffic monitoring information displayed.")
 
 # ---------- FIREWALL ----------
 elif option == "🛡️ Firewall":
-    st.header("🛡️ Firewall Security")
 
-    st.write("**Tool:** pfSense")
-    st.write("**Status:** Demonstration")
+    st.header("🛡️ Firewall")
+    st.write("Tool: **pfSense**")
+    st.write("Status: **Demonstration**")
 
-    if st.button("Show Firewall Rules"):
-        st.success("Firewall rules displayed.")
+    st.subheader("Firewall Rules")
 
-        st.write("✅ **ALLOW HTTPS — Port 443**")
-        st.write("✅ **ALLOW DNS — Port 53**")
-        st.write("🚫 **BLOCK Telnet — Port 23**")
+    st.success("✅ ALLOW HTTPS — Port 443")
+    st.success("✅ ALLOW DNS — Port 53")
+    st.error("🚫 BLOCK Telnet — Port 23")
 
-        st.info(
-            "These rules demonstrate how a firewall can allow "
-            "required services and block insecure services."
-        )
+    st.info(
+        "This section demonstrates how firewall rules can "
+        "allow required services and block insecure services."
+    )
 
-# ---------- VULNERABILITY CHECK ----------
+# ---------- VULNERABILITY ----------
 elif option == "⚠️ Vulnerability Check":
+
     st.header("⚠️ Vulnerability Check")
+    st.write("Review potential network security findings.")
 
-    st.write("Review potential security findings.")
+    if st.button("Run Demo Check"):
 
-    if st.button("Show Security Findings"):
+        st.warning("Port 445 — File sharing service may be exposed.")
+        st.write("Recommendation: Restrict access to trusted devices.")
 
-        st.warning(
-            "Open Port 445 — File sharing service may be exposed."
-        )
-        st.write(
-            "Recommendation: Restrict access to trusted devices."
-        )
+        st.warning("Telnet Port 23 — Unencrypted remote access.")
+        st.write("Recommendation: Block Telnet and use SSH.")
 
-        st.warning(
-            "Telnet Port 23 — Unencrypted remote access."
-        )
-        st.write(
-            "Recommendation: Block Telnet and use SSH."
-        )
-
-        st.warning(
-            "HTTP Port 80 — Unencrypted web traffic."
-        )
-        st.write(
-            "Recommendation: Use HTTPS/TLS."
-        )
+        st.warning("HTTP Port 80 — Unencrypted web traffic.")
+        st.write("Recommendation: Use HTTPS/TLS.")
 
         st.info(
-            "These are potential security findings for demonstration. "
-            "Further testing is required to confirm a vulnerability."
+            "These are demonstration findings. "
+            "Further testing is required to confirm vulnerabilities."
         )
 
 # ---------- IP TOOLS ----------
 elif option == "🌐 IP Tools":
-    st.header("🌐 IP Tools")
 
-    st.write(
-        "Enter an IP address to validate it and identify its version."
-    )
+    st.header("🌐 IP Address Analyzer")
+    st.write("Validate an IP address and identify its network type.")
 
     ip_input = st.text_input(
-        "Enter IP Address",
+        "IP Address",
         "192.168.1.1"
     )
 
-    if st.button("Check IP Address"):
+    if st.button("Analyze IP"):
+
         try:
             address = ipaddress.ip_address(ip_input.strip())
 
-            st.success("Valid IP Address ✅")
+            st.success("Valid IP Address")
 
-            st.write(f"**IP Address:** {address}")
-            st.write(f"**Version:** IPv{address.version}")
+            col1, col2, col3 = st.columns(3)
 
-            if address.is_private:
-                st.write("**Network Type:** Private")
-            else:
-                st.write("**Network Type:** Public")
+            with col1:
+                st.metric("Version", f"IPv{address.version}")
+
+            with col2:
+                if address.is_private:
+                    st.metric("Network Type", "Private")
+                else:
+                    st.metric("Network Type", "Public")
+
+            with col3:
+                st.metric("Status", "Valid")
 
         except ValueError:
-            st.error(
-                "Invalid IP Address. Please enter a valid IPv4 "
-                "or IPv6 address."
-            )
+            st.error("Invalid IP address.")
 
-# ---------- PASSWORD & HASH ----------
+# ---------- PASSWORD ----------
 elif option == "🔑 Password & Hash Tools":
-    st.header("🔑 Password & Hash Tools")
 
+    st.header("🔑 Password & Hash Tools")
     st.write(
         "Check password strength and generate a SHA-256 hash."
     )
 
     password = st.text_input(
-        "Enter Password",
+        "Test Password",
         type="password"
     )
+
+    st.caption("Use a sample password only — not your real password.")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("Check Password Strength"):
-            if password == "":
-                st.warning("Please enter a password first.")
+
+        if st.button("Check Strength"):
+
+            if not password:
+                st.warning("Enter a sample password first.")
 
             else:
                 score = 0
 
                 if len(password) >= 8:
                     score += 1
-
                 if any(c.isupper() for c in password):
                     score += 1
-
                 if any(c.islower() for c in password):
                     score += 1
-
                 if any(c.isdigit() for c in password):
                     score += 1
-
                 if any(not c.isalnum() for c in password):
                     score += 1
 
                 if score <= 2:
-                    st.error("Password Strength: Weak 🔴")
-
+                    st.error("Password Strength: Weak")
                 elif score <= 4:
-                    st.warning("Password Strength: Medium 🟠")
-
+                    st.warning("Password Strength: Medium")
                 else:
-                    st.success("Password Strength: Strong 🟢")
+                    st.success("Password Strength: Strong")
 
     with col2:
-        if st.button("Generate SHA-256 Hash"):
-            if password == "":
-                st.warning("Please enter a password first.")
+
+        if st.button("Generate SHA-256"):
+
+            if not password:
+                st.warning("Enter a sample password first.")
 
             else:
                 hashed_password = hashlib.sha256(
                     password.encode()
                 ).hexdigest()
 
-                st.success("SHA-256 Hash Generated")
+                st.success("SHA-256 Generated")
                 st.code(hashed_password)
 
-    st.caption(
-        "For this demonstration, the password is processed only "
-        "to calculate the displayed result."
-    )
-
-# ---------- SECURITY REPORT ----------
+# ---------- REPORT ----------
 elif option == "📄 Security Report":
-    st.header("📄 Network Security Basics Report")
 
-    st.subheader("🔎 Network Scan")
-    st.write("Tool: Nmap")
-    st.write("Identify open ports and running services.")
+    st.header("📄 Security Report")
+    st.caption("INTERTEC SYSTEMS LLC | Network Security Basics")
 
-    st.subheader("📡 Traffic Monitoring")
-    st.write("Tool: Wireshark")
-    st.write("Filters used: TCP, DNS and TLS.")
+    st.subheader("Network Scan")
+    st.write("Nmap — Open port and service identification.")
 
-    st.subheader("🛡️ Firewall")
-    st.write("Tool: pfSense — Demonstration")
-    st.write("Allow HTTPS, allow DNS and block Telnet.")
+    st.subheader("Traffic Monitoring")
+    st.write("Wireshark — TCP, DNS and TLS traffic analysis.")
 
-    st.subheader("🌐 IP Tools")
-    st.write("Validate IPv4 and IPv6 addresses.")
+    st.subheader("Firewall")
+    st.write("pfSense — Firewall rule demonstration.")
 
-    st.subheader("🔑 Password & Hash Tools")
-    st.write(
-        "Check password strength and generate SHA-256 hashes."
-    )
+    st.subheader("IP Analysis")
+    st.write("IPv4 and IPv6 address validation.")
+
+    st.subheader("Password Security")
+    st.write("Password strength and SHA-256 demonstration.")
 
     st.subheader("Security Recommendations")
 
-    st.write("• Use HTTPS/TLS.")
+    st.write("• Use HTTPS/TLS for secure communication.")
     st.write("• Block Telnet and use SSH.")
     st.write("• Restrict unnecessary open ports.")
-    st.write("• Use firewall rules.")
+    st.write("• Apply firewall rules.")
     st.write("• Monitor network traffic regularly.")
     st.write("• Use strong passwords.")
 
-    st.success("Security report generated successfully.")
+    st.success("Security report ready.")

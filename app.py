@@ -1083,34 +1083,45 @@ elif st.session_state.page == "📡 Traffic Monitoring":
         )
 
 
-    st.markdown(
-        "### 🧪 Traffic Analysis"
+    st.markdown("### 🧪 Wireshark Capture Results")
+
+    r1, r2, r3 = st.columns(3)
+
+    with r1:
+        st.metric(
+            "🔵 TCP Packets",
+            "189",
+            "66.5% displayed"
+        )
+
+    with r2:
+        st.metric(
+            "🟢 DNS Packets",
+            "20",
+            "1.2% displayed"
+        )
+
+    with r3:
+        st.metric(
+            "🟣 TLS Packets",
+            "610",
+            "18.5% displayed"
+        )
+
+    st.markdown("### 📊 Capture Summary")
+
+    st.table({
+        "Protocol": ["TCP", "DNS", "TLS"],
+        "Displayed Packets": [189, 20, 610],
+        "Total Packets at Screenshot": [284, 1619, 3289],
+        "Displayed Percentage": ["66.5%", "1.2%", "18.5%"]
+    })
+
+    st.info(
+        "These values are based on Wireshark screenshots from local testing. "
+        "The screenshots were taken at different times, so the total packet count "
+        "is different in each capture."
     )
-
-    if st.button(
-        "▶ Run Traffic Demo"
-    ):
-
-        st.success(
-            "Traffic analysis completed."
-        )
-
-        st.code(
-"""Protocol Analysis
-
-TCP:
-Connection traffic detected.
-
-DNS:
-Domain queries detected.
-
-TLS:
-Encrypted traffic detected.
-
-Result:
-Network traffic should be monitored
-for unusual activity."""
-        )
 
 
     if st.button(

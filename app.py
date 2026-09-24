@@ -1,6 +1,7 @@
 import streamlit as st
 import ipaddress
 import hashlib
+import glob
 
 # =========================================================
 # PAGE SETUP
@@ -34,6 +35,25 @@ if "page" not in st.session_state:
 
 def go_to(page):
     st.session_state.page = page
+
+
+def find_project_logo():
+    """Find the custom Network Security Suite logo uploaded to the repo."""
+    preferred = [
+        "network_security_suite_logo.png",
+        "network_security_suite_logo.jpg",
+        "network_security_suite_logo.jpeg",
+    ]
+
+    for filename in preferred:
+        if Path(filename).exists():
+            return filename
+
+    matches = sorted(glob.glob("network_security_suite_logo*"))
+    if matches:
+        return matches[0]
+
+    return None
 
 
 # =========================================================
@@ -589,14 +609,17 @@ def card(
 # SIDEBAR
 # =========================================================
 
-try:
+# Custom project logo at the TOP of the sidebar
+project_logo = find_project_logo()
+
+if project_logo:
     st.sidebar.image(
-        "intertec_systems_logo.jpg",
-        width=145
+        project_logo,
+        width=190
     )
-except:
+else:
     st.sidebar.markdown(
-        "# INTERTEC"
+        "### 🛡️ Network Security Suite"
     )
 
 st.sidebar.markdown(
@@ -616,11 +639,14 @@ if option != st.session_state.page:
     st.rerun()
 
 
+# Official company logo stays at the SIDE / BOTTOM
 st.sidebar.divider()
 
-st.sidebar.markdown(
-    "### 🔐 Network Security"
-)
+if Path("intertec_systems_logo.jpg").exists():
+    st.sidebar.image(
+        "intertec_systems_logo.jpg",
+        width=150
+    )
 
 st.sidebar.caption(
     "INTERTEC SYSTEMS LLC"

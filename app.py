@@ -18,6 +18,7 @@ st.set_page_config(
 
 pages = [
     "🏠 Dashboard",
+    "🧰 Security Tools",
     "🔎 Network Scan",
     "📡 Traffic Monitoring",
     "🛡️ Firewall",
@@ -666,7 +667,8 @@ if st.session_state.page == "🏠 Dashboard":
             "🧰 View Tools",
             key="quick_tools"
         ):
-            st.session_state.show_tools = True
+            go_to("🧰 Security Tools")
+            st.rerun()
 
 
     with q2:
@@ -864,6 +866,69 @@ if st.session_state.page == "🏠 Dashboard":
         """,
         unsafe_allow_html=True
     )
+
+
+# =========================================================
+# SECURITY TOOLS
+# =========================================================
+
+elif st.session_state.page == "🧰 Security Tools":
+
+    hero(
+        "🧰 Security Tools",
+        "Choose a network security tool to open."
+    )
+
+    st.info("Select one of the available security tools below.")
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        card("🔎", "Network Scan", "Identify open ports and running services using Nmap.", "card-blue")
+        if st.button("Open Network Scan →", key="tools_nmap"):
+            go_to("🔎 Network Scan")
+            st.rerun()
+
+    with c2:
+        card("📡", "Traffic Monitoring", "Review TCP, DNS and TLS traffic using Wireshark.", "card-green")
+        if st.button("Open Traffic Monitoring →", key="tools_wireshark"):
+            go_to("📡 Traffic Monitoring")
+            st.rerun()
+
+    with c3:
+        card("🛡️", "Firewall", "Review secure firewall rules using a pfSense demonstration.", "card-pink")
+        if st.button("Open Firewall →", key="tools_firewall"):
+            go_to("🛡️ Firewall")
+            st.rerun()
+
+    c4, c5, c6 = st.columns(3)
+
+    with c4:
+        card("⚠️", "Vulnerability Check", "Review potential security risks and recommendations.", "card-orange")
+        if st.button("Open Vulnerability Check →", key="tools_vulnerability"):
+            go_to("⚠️ Vulnerability Check")
+            st.rerun()
+
+    with c5:
+        card("🌐", "IP Tools", "Validate IPv4 and IPv6 addresses and identify their type.", "card-purple")
+        if st.button("Open IP Tools →", key="tools_ip"):
+            go_to("🌐 IP Tools")
+            st.rerun()
+
+    with c6:
+        card("🔑", "Password & Hash Tools", "Check password strength and generate SHA-256 hashes.", "card-cyan")
+        if st.button("Open Password Tools →", key="tools_password"):
+            go_to("🔑 Password & Hash Tools")
+            st.rerun()
+
+    st.markdown("### 📄 Additional Tool")
+    if st.button("📄 Open Security Report", key="tools_report"):
+        go_to("📄 Security Report")
+        st.rerun()
+
+    if st.button("⬅ Back to Dashboard", key="back_tools"):
+        go_to("🏠 Dashboard")
+        st.rerun()
 
 
 # =========================================================

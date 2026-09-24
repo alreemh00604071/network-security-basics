@@ -5,6 +5,7 @@ import hashlib
 # =========================================================
 # PAGE SETUP
 # =========================================================
+
 st.set_page_config(
     page_title="Intertec | Network Security",
     page_icon="🛡️",
@@ -12,17 +13,53 @@ st.set_page_config(
 )
 
 # =========================================================
+# SESSION STATE
+# =========================================================
+
+pages = [
+    "🏠 Dashboard",
+    "🔎 Network Scan",
+    "📡 Traffic Monitoring",
+    "🛡️ Firewall",
+    "⚠️ Vulnerability Check",
+    "🌐 IP Tools",
+    "🔑 Password & Hash Tools",
+    "📄 Security Report"
+]
+
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 Dashboard"
+
+
+def go_to(page):
+    st.session_state.page = page
+
+
+# =========================================================
 # DESIGN
 # =========================================================
+
 st.markdown("""
 <style>
 
-/* PAGE */
+/* =========================
+   MAIN BACKGROUND
+========================= */
+
 .stApp {
     background:
-        radial-gradient(circle at 85% 10%, rgba(59,130,246,.20), transparent 25%),
-        radial-gradient(circle at 70% 80%, rgba(139,92,246,.16), transparent 30%),
-        linear-gradient(135deg, #f8fbff 0%, #eef5ff 50%, #faf7ff 100%);
+        radial-gradient(circle at 88% 10%,
+        rgba(59,130,246,.20), transparent 25%),
+
+        radial-gradient(circle at 70% 80%,
+        rgba(139,92,246,.16), transparent 30%),
+
+        linear-gradient(
+        135deg,
+        #f8fbff 0%,
+        #eef5ff 50%,
+        #faf7ff 100%
+        );
 }
 
 .block-container {
@@ -32,10 +69,20 @@ st.markdown("""
     animation: fadeUp .55s ease;
 }
 
-/* SIDEBAR */
+
+/* =========================
+   SIDEBAR
+========================= */
+
 section[data-testid="stSidebar"] {
     background:
-        linear-gradient(180deg, #eaf3ff 0%, #eef2ff 50%, #f5f3ff 100%);
+        linear-gradient(
+        180deg,
+        #eaf3ff 0%,
+        #eef2ff 50%,
+        #f5f3ff 100%
+        );
+
     border-right: 1px solid #dbeafe;
 }
 
@@ -43,182 +90,424 @@ section[data-testid="stSidebar"] img {
     background: white;
     padding: 8px;
     border-radius: 18px;
-    box-shadow: 0 8px 22px rgba(15, 46, 90, .10);
+
+    box-shadow:
+        0 8px 22px
+        rgba(15,46,90,.10);
 }
 
-/* TITLES */
+
+/* =========================
+   TITLES
+========================= */
+
 h1, h2, h3 {
     color: #102a56;
 }
 
-/* BUTTONS */
+
+/* =========================
+   BUTTONS
+========================= */
+
 .stButton > button {
     width: 100%;
-    min-height: 44px;
+    min-height: 46px;
+
     border: 0;
     border-radius: 14px;
+
     color: white;
     font-weight: 700;
-    background: linear-gradient(90deg, #1677ff, #7047eb);
-    box-shadow: 0 7px 18px rgba(37,99,235,.22);
-    transition: all .25s ease;
+
+    background:
+        linear-gradient(
+        90deg,
+        #1677ff,
+        #7047eb
+        );
+
+    box-shadow:
+        0 7px 18px
+        rgba(37,99,235,.22);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
 }
 
 .stButton > button:hover {
     color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(109,74,255,.32);
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 13px 27px
+        rgba(109,74,255,.32);
 }
 
-/* METRICS */
+
+/* =========================
+   METRIC CARDS
+========================= */
+
 div[data-testid="stMetric"] {
-    background: rgba(255,255,255,.80);
-    border: 1px solid rgba(255,255,255,.95);
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 9px 25px rgba(30,64,175,.10);
-    transition: all .25s ease;
+
+    background:
+        rgba(255,255,255,.90);
+
+    border:
+        1px solid
+        rgba(255,255,255,.95);
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 10px 27px
+        rgba(30,64,175,.12);
+
+    transition:
+        all .25s ease;
 }
 
 div[data-testid="stMetric"]:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 30px rgba(37,99,235,.18);
+
+    transform:
+        translateY(-6px);
+
+    box-shadow:
+        0 17px 35px
+        rgba(37,99,235,.20);
 }
 
-/* NORMAL STREAMLIT BOXES */
+
+/* =========================
+   ALERT BOXES
+========================= */
+
 div[data-testid="stAlert"] {
     border-radius: 17px;
 }
 
-/* INPUT */
+
+/* =========================
+   INPUTS
+========================= */
+
 div[data-baseweb="input"] {
     border-radius: 14px;
 }
 
-/* HERO */
+
+/* =========================
+   HERO
+========================= */
+
 .hero {
+
     position: relative;
     overflow: hidden;
-    padding: 32px 36px;
-    margin-bottom: 24px;
-    border-radius: 25px;
+
+    padding:
+        32px 36px;
+
+    margin-bottom:
+        24px;
+
+    border-radius:
+        25px;
+
     background:
-        radial-gradient(circle at 88% 25%, rgba(59,130,246,.75), transparent 27%),
-        linear-gradient(115deg, #071b46 0%, #123d85 58%, #7047eb 100%);
-    box-shadow: 0 16px 38px rgba(30,64,175,.25);
+
+        radial-gradient(
+        circle at 88% 25%,
+        rgba(59,130,246,.75),
+        transparent 27%
+        ),
+
+        linear-gradient(
+        115deg,
+        #071b46 0%,
+        #123d85 58%,
+        #7047eb 100%
+        );
+
+    box-shadow:
+        0 16px 38px
+        rgba(30,64,175,.25);
 }
 
 .hero::before {
+
     content: "";
+
     position: absolute;
+
     width: 230px;
     height: 230px;
+
     border-radius: 50%;
+
     right: -65px;
     bottom: -140px;
-    background: rgba(255,255,255,.11);
+
+    background:
+        rgba(255,255,255,.11);
+}
+
+.hero::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 120px;
+    height: 120px;
+
+    border-radius: 50%;
+
+    right: 70px;
+    top: -60px;
+
+    background:
+        rgba(255,255,255,.08);
 }
 
 .hero-company {
+
     color: #bfdbfe;
+
     font-size: 15px;
+
     font-weight: 700;
+
     letter-spacing: 1px;
 }
 
 .hero-title {
+
     color: white;
+
     font-size: 40px;
+
     line-height: 1.15;
+
     font-weight: 800;
+
     margin-top: 8px;
 }
 
 .hero-subtitle {
+
     color: #dbeafe;
+
     font-size: 19px;
+
     margin-top: 8px;
 }
 
 .hero-tags {
+
     color: #bfdbfe;
+
     font-size: 14px;
+
     margin-top: 22px;
 }
 
-/* CARDS */
+
+/* =========================
+   TOOL CARDS
+========================= */
+
 .card {
-    background: rgba(255,255,255,.82);
-    border: 1px solid rgba(255,255,255,.95);
-    border-radius: 20px;
-    padding: 21px;
-    min-height: 145px;
-    margin-bottom: 15px;
-    box-shadow: 0 8px 24px rgba(15,46,90,.09);
-    transition: all .25s ease;
+
+    background:
+        rgba(255,255,255,.82);
+
+    border:
+        1px solid
+        rgba(255,255,255,.95);
+
+    border-radius:
+        20px;
+
+    padding:
+        21px;
+
+    min-height:
+        145px;
+
+    margin-bottom:
+        15px;
+
+    box-shadow:
+        0 8px 24px
+        rgba(15,46,90,.09);
+
+    transition:
+        all .25s ease;
 }
 
 .card:hover {
-    transform: translateY(-7px);
-    box-shadow: 0 16px 32px rgba(37,99,235,.17);
+
+    transform:
+        translateY(-7px)
+        scale(1.01);
+
+    box-shadow:
+        0 16px 32px
+        rgba(37,99,235,.17);
 }
 
 .card-blue {
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    background:
+        linear-gradient(
+        135deg,
+        #eff6ff,
+        #dbeafe
+        );
 }
 
 .card-green {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    background:
+        linear-gradient(
+        135deg,
+        #ecfdf5,
+        #d1fae5
+        );
 }
 
 .card-purple {
-    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    background:
+        linear-gradient(
+        135deg,
+        #f5f3ff,
+        #ede9fe
+        );
 }
 
 .card-orange {
-    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    background:
+        linear-gradient(
+        135deg,
+        #fff7ed,
+        #ffedd5
+        );
 }
 
 .card-pink {
-    background: linear-gradient(135deg, #fff1f2, #fce7f3);
+    background:
+        linear-gradient(
+        135deg,
+        #fff1f2,
+        #fce7f3
+        );
 }
 
 .card-cyan {
-    background: linear-gradient(135deg, #ecfeff, #cffafe);
+    background:
+        linear-gradient(
+        135deg,
+        #ecfeff,
+        #cffafe
+        );
 }
 
 .card-title {
+
     color: #102a56;
+
     font-size: 19px;
+
     font-weight: 800;
+
     margin-bottom: 8px;
 }
 
 .card-text {
+
     color: #475569;
+
     font-size: 15px;
+
     line-height: 1.55;
 }
 
-/* FOOTER */
-.footer-box {
-    margin-top: 25px;
-    padding: 22px;
-    border-radius: 20px;
-    color: white;
-    background: linear-gradient(100deg, #102a56, #164e9c, #6339d7);
-    box-shadow: 0 10px 25px rgba(30,64,175,.18);
+
+/* =========================
+   QUICK ACCESS TITLE
+========================= */
+
+.quick-title {
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #102a56;
+
+    margin-top: 5px;
+
+    margin-bottom: 12px;
 }
 
-/* ANIMATION */
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer-box {
+
+    margin-top:
+        25px;
+
+    padding:
+        22px;
+
+    border-radius:
+        20px;
+
+    color:
+        white;
+
+    background:
+        linear-gradient(
+        100deg,
+        #102a56,
+        #164e9c,
+        #6339d7
+        );
+
+    box-shadow:
+        0 10px 25px
+        rgba(30,64,175,.18);
+}
+
+
+/* =========================
+   ANIMATION
+========================= */
+
 @keyframes fadeUp {
+
     from {
+
         opacity: 0;
-        transform: translateY(12px);
+
+        transform:
+            translateY(14px);
     }
+
     to {
+
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
     }
 }
 
@@ -227,93 +516,227 @@ div[data-baseweb="input"] {
 
 
 # =========================================================
-# HELPER FUNCTIONS
+# FUNCTIONS
 # =========================================================
+
 def hero(title, subtitle):
+
     html = (
+
         '<div class="hero">'
-        '<div class="hero-company">INTERTEC SYSTEMS LLC</div>'
-        f'<div class="hero-title">{title}</div>'
-        f'<div class="hero-subtitle">{subtitle}</div>'
+
+        '<div class="hero-company">'
+        'INTERTEC SYSTEMS LLC'
+        '</div>'
+
+        f'<div class="hero-title">'
+        f'{title}'
+        '</div>'
+
+        f'<div class="hero-subtitle">'
+        f'{subtitle}'
+        '</div>'
+
         '<div class="hero-tags">'
+
         '🛡️ Network Security &nbsp;&nbsp; '
+
         '📡 Traffic Analysis &nbsp;&nbsp; '
+
         '🔐 Secure Infrastructure'
+
         '</div>'
+
         '</div>'
     )
-    st.markdown(html, unsafe_allow_html=True)
+
+    st.markdown(
+        html,
+        unsafe_allow_html=True
+    )
 
 
-def card(icon, title, text, color):
+def card(
+    icon,
+    title,
+    text,
+    color
+):
+
     html = (
+
         f'<div class="card {color}">'
-        f'<div class="card-title">{icon} {title}</div>'
-        f'<div class="card-text">{text}</div>'
+
+        f'<div class="card-title">'
+        f'{icon} {title}'
+        '</div>'
+
+        f'<div class="card-text">'
+        f'{text}'
+        '</div>'
+
         '</div>'
     )
-    st.markdown(html, unsafe_allow_html=True)
+
+    st.markdown(
+        html,
+        unsafe_allow_html=True
+    )
 
 
 # =========================================================
 # SIDEBAR
 # =========================================================
-st.sidebar.image("intertec_systems_logo.jpg", width=145)
 
-st.sidebar.markdown("## 🛡️ Security Console")
+try:
+    st.sidebar.image(
+        "intertec_systems_logo.jpg",
+        width=145
+    )
+except:
+    st.sidebar.markdown(
+        "# INTERTEC"
+    )
+
+st.sidebar.markdown(
+    "## 🛡️ Security Console"
+)
 
 option = st.sidebar.radio(
     "Navigation",
-    [
-        "🏠 Dashboard",
-        "🔎 Network Scan",
-        "📡 Traffic Monitoring",
-        "🛡️ Firewall",
-        "⚠️ Vulnerability Check",
-        "🌐 IP Tools",
-        "🔑 Password & Hash Tools",
-        "📄 Security Report"
-    ]
+    pages,
+    index=pages.index(
+        st.session_state.page
+    )
 )
 
+if option != st.session_state.page:
+    st.session_state.page = option
+    st.rerun()
+
+
 st.sidebar.divider()
-st.sidebar.markdown("### 🔐 Network Security")
-st.sidebar.caption("INTERTEC SYSTEMS LLC")
-st.sidebar.caption("Network Security Basics Project")
+
+st.sidebar.markdown(
+    "### 🔐 Network Security"
+)
+
+st.sidebar.caption(
+    "INTERTEC SYSTEMS LLC"
+)
+
+st.sidebar.caption(
+    "Network Security Basics Project"
+)
 
 
 # =========================================================
 # DASHBOARD
 # =========================================================
-if option == "🏠 Dashboard":
+
+if st.session_state.page == "🏠 Dashboard":
 
     hero(
         "🛡️ Network Security Suite",
         "Monitor. Analyze. Protect."
     )
 
-    # STATUS
-    c1, c2, c3, c4 = st.columns(4)
+    st.markdown(
+        '<div class="quick-title">'
+        '⚡ Quick Access'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-    with c1:
-        st.metric("🧰 Security Tools", "7", "Available")
+    # -----------------------------------------------------
+    # QUICK ACCESS
+    # -----------------------------------------------------
 
-    with c2:
-        st.metric("📡 Traffic Analysis", "Wireshark", "Local testing")
+    q1, q2, q3, q4 = st.columns(4)
 
-    with c3:
-        st.metric("🛡️ Firewall", "pfSense", "Demo")
+    with q1:
 
-    with c4:
-        st.metric("🔎 Network Scan", "Nmap", "Local testing")
+        st.metric(
+            "🧰 Security Tools",
+            "7",
+            "Available"
+        )
+
+        if st.button(
+            "🧰 View Tools",
+            key="quick_tools"
+        ):
+            st.session_state.show_tools = True
+
+
+    with q2:
+
+        st.metric(
+            "📡 Traffic Analysis",
+            "Wireshark",
+            "Local testing"
+        )
+
+        if st.button(
+            "📡 Open Wireshark",
+            key="quick_wireshark"
+        ):
+            go_to(
+                "📡 Traffic Monitoring"
+            )
+            st.rerun()
+
+
+    with q3:
+
+        st.metric(
+            "🛡️ Firewall",
+            "pfSense",
+            "Demo"
+        )
+
+        if st.button(
+            "🛡️ Open pfSense",
+            key="quick_firewall"
+        ):
+            go_to(
+                "🛡️ Firewall"
+            )
+            st.rerun()
+
+
+    with q4:
+
+        st.metric(
+            "🔎 Network Scan",
+            "Nmap",
+            "Local testing"
+        )
+
+        if st.button(
+            "🔎 Open Nmap",
+            key="quick_nmap"
+        ):
+            go_to(
+                "🔎 Network Scan"
+            )
+            st.rerun()
+
 
     st.write("")
-    st.markdown("## 🛡️ Security Tools")
 
-    # FIRST ROW
+    # -----------------------------------------------------
+    # SECURITY TOOLS
+    # -----------------------------------------------------
+
+    st.markdown(
+        "## 🛡️ Security Tools"
+    )
+
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         card(
             "🔎",
             "Network Scan",
@@ -321,7 +744,18 @@ if option == "🏠 Dashboard":
             "card-blue"
         )
 
+        if st.button(
+            "Open Network Scan →",
+            key="card_nmap"
+        ):
+            go_to(
+                "🔎 Network Scan"
+            )
+            st.rerun()
+
+
     with c2:
+
         card(
             "📡",
             "Traffic Monitoring",
@@ -329,7 +763,18 @@ if option == "🏠 Dashboard":
             "card-green"
         )
 
+        if st.button(
+            "Open Traffic Monitoring →",
+            key="card_wireshark"
+        ):
+            go_to(
+                "📡 Traffic Monitoring"
+            )
+            st.rerun()
+
+
     with c3:
+
         card(
             "🛡️",
             "Firewall",
@@ -337,10 +782,20 @@ if option == "🏠 Dashboard":
             "card-pink"
         )
 
-    # SECOND ROW
+        if st.button(
+            "Open Firewall →",
+            key="card_firewall"
+        ):
+            go_to(
+                "🛡️ Firewall"
+            )
+            st.rerun()
+
+
     c4, c5, c6 = st.columns(3)
 
     with c4:
+
         card(
             "⚠️",
             "Vulnerability Check",
@@ -348,7 +803,18 @@ if option == "🏠 Dashboard":
             "card-orange"
         )
 
+        if st.button(
+            "Run Vulnerability Check →",
+            key="card_vulnerability"
+        ):
+            go_to(
+                "⚠️ Vulnerability Check"
+            )
+            st.rerun()
+
+
     with c5:
+
         card(
             "🌐",
             "IP Tools",
@@ -356,7 +822,18 @@ if option == "🏠 Dashboard":
             "card-purple"
         )
 
+        if st.button(
+            "Open IP Tools →",
+            key="card_ip"
+        ):
+            go_to(
+                "🌐 IP Tools"
+            )
+            st.rerun()
+
+
     with c6:
+
         card(
             "🔑",
             "Password & Hash Tools",
@@ -364,12 +841,27 @@ if option == "🏠 Dashboard":
             "card-cyan"
         )
 
+        if st.button(
+            "Open Password Tools →",
+            key="card_password"
+        ):
+            go_to(
+                "🔑 Password & Hash Tools"
+            )
+            st.rerun()
+
+
     st.markdown(
-        '<div class="footer-box">'
-        '<b>🔐 Network Security Basics</b><br>'
-        'Learn to detect risks, protect network services, '
-        'and apply security recommendations.'
-        '</div>',
+        """
+        <div class="footer-box">
+        <b>🔐 Network Security Basics</b>
+        <br><br>
+        Learn to detect security risks,
+        analyze network traffic,
+        protect network services,
+        and apply security recommendations.
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
@@ -377,15 +869,16 @@ if option == "🏠 Dashboard":
 # =========================================================
 # NETWORK SCAN
 # =========================================================
-elif option == "🔎 Network Scan":
+
+elif st.session_state.page == "🔎 Network Scan":
 
     hero(
         "🔎 Network Scan",
-        "Review open ports and running services."
+        "Identify open ports and running services."
     )
 
     st.info(
-        "Tool: Nmap — Real Nmap testing was completed locally."
+        "Tool: Nmap — Nmap testing was completed locally."
     )
 
     target = st.text_input(
@@ -393,28 +886,52 @@ elif option == "🔎 Network Scan":
         "127.0.0.1"
     )
 
-    if st.button("▶ Start Demo Scan"):
+    if st.button(
+        "▶ Start Demo Scan"
+    ):
 
-        st.success("Demo scan completed.")
+        st.success(
+            "✅ Demo scan completed."
+        )
 
         st.code(
-            f"""Target: {target}
+f"""Nmap Security Scan
 
-135/tcp   open   msrpc
-445/tcp   open   microsoft-ds
-902/tcp   open   vmware-auth
-912/tcp   open   vmware-auth"""
+Target: {target}
+
+PORT       STATE    SERVICE
+135/tcp    open     msrpc
+445/tcp    open     microsoft-ds
+902/tcp    open     vmware-auth
+912/tcp    open     vmware-auth
+
+Scan Status: Completed
+"""
+        )
+
+        st.warning(
+            "Open ports should be reviewed to confirm that they are required."
         )
 
     st.warning(
-        "Only scan systems you own or have permission to test."
+        "⚠️ Only scan systems you own or have permission to test."
     )
+
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_nmap"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()
 
 
 # =========================================================
 # TRAFFIC MONITORING
 # =========================================================
-elif option == "📡 Traffic Monitoring":
+
+elif st.session_state.page == "📡 Traffic Monitoring":
 
     hero(
         "📡 Traffic Monitoring",
@@ -428,14 +945,16 @@ elif option == "📡 Traffic Monitoring":
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         card(
             "🔵",
             "TCP",
-            "Review TCP connections and communication.",
+            "Review TCP connections, ports and communication.",
             "card-blue"
         )
 
     with c2:
+
         card(
             "🟢",
             "DNS",
@@ -444,6 +963,7 @@ elif option == "📡 Traffic Monitoring":
         )
 
     with c3:
+
         card(
             "🟣",
             "TLS",
@@ -451,33 +971,121 @@ elif option == "📡 Traffic Monitoring":
             "card-purple"
         )
 
-    if st.button("📡 Show Wireshark Filters"):
-        st.code("tcp\ndns\ntls")
+
+    st.markdown(
+        "### 📡 Wireshark Filters"
+    )
+
+    filter_type = st.selectbox(
+        "Select traffic type",
+        [
+            "TCP",
+            "DNS",
+            "TLS",
+            "TCP SYN",
+            "Large TCP Packets"
+        ]
+    )
+
+    filters = {
+
+        "TCP":
+            "tcp",
+
+        "DNS":
+            "dns",
+
+        "TLS":
+            "tls",
+
+        "TCP SYN":
+            "tcp.flags.syn == 1",
+
+        "Large TCP Packets":
+            "tcp.len > 10000"
+    }
+
+    if st.button(
+        "🔍 Show Filter"
+    ):
+
+        st.success(
+            f"{filter_type} filter:"
+        )
+
+        st.code(
+            filters[filter_type]
+        )
+
+
+    st.markdown(
+        "### 🧪 Traffic Analysis"
+    )
+
+    if st.button(
+        "▶ Run Traffic Demo"
+    ):
+
+        st.success(
+            "Traffic analysis completed."
+        )
+
+        st.code(
+"""Protocol Analysis
+
+TCP:
+Connection traffic detected.
+
+DNS:
+Domain queries detected.
+
+TLS:
+Encrypted traffic detected.
+
+Result:
+Network traffic should be monitored
+for unusual activity."""
+        )
+
+
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_wireshark"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()
 
 
 # =========================================================
 # FIREWALL
 # =========================================================
-elif option == "🛡️ Firewall":
+
+elif st.session_state.page == "🛡️ Firewall":
 
     hero(
         "🛡️ Firewall Security",
-        "Review secure network access rules."
+        "Manage and review network access rules."
     )
 
-    st.warning("Tool: pfSense — Demonstration")
+    st.warning(
+        "Tool: pfSense — Demonstration"
+    )
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         card(
             "✅",
             "HTTPS",
-            "ALLOW — Port 443",
+            "ALLOW — TCP Port 443",
             "card-green"
         )
 
     with c2:
+
         card(
             "✅",
             "DNS",
@@ -486,33 +1094,118 @@ elif option == "🛡️ Firewall":
         )
 
     with c3:
+
         card(
             "🚫",
             "Telnet",
-            "BLOCK — Port 23",
+            "BLOCK — TCP Port 23",
             "card-pink"
         )
 
-    st.info(
-        "These rules demonstrate how a firewall can allow "
-        "required services and block insecure services."
+
+    st.markdown(
+        "### 🔥 Firewall Rule Tester"
     )
+
+    service = st.selectbox(
+        "Select Service",
+        [
+            "HTTPS",
+            "DNS",
+            "SSH",
+            "HTTP",
+            "Telnet"
+        ]
+    )
+
+    firewall_rules = {
+
+        "HTTPS":
+            ("443", "ALLOW"),
+
+        "DNS":
+            ("53", "ALLOW"),
+
+        "SSH":
+            ("22", "ALLOW"),
+
+        "HTTP":
+            ("80", "REVIEW"),
+
+        "Telnet":
+            ("23", "BLOCK")
+    }
+
+    if st.button(
+        "🛡️ Check Firewall Rule"
+    ):
+
+        port, action = (
+            firewall_rules[service]
+        )
+
+        st.write(
+            f"**Service:** {service}"
+        )
+
+        st.write(
+            f"**Port:** {port}"
+        )
+
+        if action == "ALLOW":
+
+            st.success(
+                f"✅ {action}"
+            )
+
+        elif action == "BLOCK":
+
+            st.error(
+                f"🚫 {action}"
+            )
+
+        else:
+
+            st.warning(
+                f"⚠️ {action}"
+            )
+
+
+    st.info(
+        "Firewall rules help control network access and reduce security risks."
+    )
+
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_firewall"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()
 
 
 # =========================================================
 # VULNERABILITY CHECK
 # =========================================================
-elif option == "⚠️ Vulnerability Check":
+
+elif st.session_state.page == "⚠️ Vulnerability Check":
 
     hero(
         "⚠️ Vulnerability Check",
         "Review potential network security risks."
     )
 
-    if st.button("🔍 Run Demo Check"):
+    st.write(
+        "Run a basic demonstration security check."
+    )
+
+    if st.button(
+        "🔍 Run Demo Vulnerability Check"
+    ):
 
         st.warning(
-            "Port 445 — File sharing service may be exposed."
+            "⚠️ Port 445 — File sharing service may be exposed."
         )
 
         st.success(
@@ -520,7 +1213,7 @@ elif option == "⚠️ Vulnerability Check":
         )
 
         st.warning(
-            "Telnet Port 23 — Unencrypted remote access."
+            "⚠️ Telnet Port 23 — Unencrypted remote access."
         )
 
         st.success(
@@ -528,7 +1221,7 @@ elif option == "⚠️ Vulnerability Check":
         )
 
         st.warning(
-            "HTTP Port 80 — Unencrypted web traffic."
+            "⚠️ HTTP Port 80 — Unencrypted web traffic."
         )
 
         st.success(
@@ -536,19 +1229,29 @@ elif option == "⚠️ Vulnerability Check":
         )
 
         st.info(
-            "These are demonstration findings. "
-            "Further testing is required to confirm vulnerabilities."
+            "These are demonstration findings. Further testing is required to confirm vulnerabilities."
         )
+
+
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_vulnerability"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()
 
 
 # =========================================================
 # IP TOOLS
 # =========================================================
-elif option == "🌐 IP Tools":
+
+elif st.session_state.page == "🌐 IP Tools":
 
     hero(
         "🌐 IP Address Analyzer",
-        "Validate IPv4 and IPv6 addresses."
+        "Validate and analyze IPv4 and IPv6 addresses."
     )
 
     ip_input = st.text_input(
@@ -556,22 +1259,35 @@ elif option == "🌐 IP Tools":
         "192.168.1.1"
     )
 
-    if st.button("🌐 Analyze IP"):
+    if st.button(
+        "🌐 Analyze IP"
+    ):
 
         try:
-            address = ipaddress.ip_address(ip_input.strip())
 
-            st.success("✅ Valid IP Address")
+            address = (
+                ipaddress.ip_address(
+                    ip_input.strip()
+                )
+            )
 
-            c1, c2, c3 = st.columns(3)
+            st.success(
+                "✅ Valid IP Address"
+            )
+
+            c1, c2, c3 = (
+                st.columns(3)
+            )
 
             with c1:
+
                 st.metric(
                     "IP Version",
                     f"IPv{address.version}"
                 )
 
             with c2:
+
                 network_type = (
                     "Private"
                     if address.is_private
@@ -584,22 +1300,48 @@ elif option == "🌐 IP Tools":
                 )
 
             with c3:
+
                 st.metric(
                     "Status",
                     "Valid"
                 )
 
+            st.write(
+                "**Loopback:**",
+                "Yes"
+                if address.is_loopback
+                else "No"
+            )
+
+            st.write(
+                "**Multicast:**",
+                "Yes"
+                if address.is_multicast
+                else "No"
+            )
+
         except ValueError:
+
             st.error(
-                "❌ Invalid IP address. "
-                "Enter a valid IPv4 or IPv6 address."
+                "❌ Invalid IP address. Enter a valid IPv4 or IPv6 address."
             )
 
 
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_ip"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()
+
+
 # =========================================================
-# PASSWORD & HASH
+# PASSWORD & HASH TOOLS
 # =========================================================
-elif option == "🔑 Password & Hash Tools":
+
+elif st.session_state.page == "🔑 Password & Hash Tools":
 
     hero(
         "🔑 Password & Hash Tools",
@@ -607,7 +1349,7 @@ elif option == "🔑 Password & Hash Tools":
     )
 
     st.warning(
-        "Use a sample password only — do not enter your real password."
+        "⚠️ Use a sample password only. Do not enter your real password."
     )
 
     password = st.text_input(
@@ -619,58 +1361,111 @@ elif option == "🔑 Password & Hash Tools":
 
     with c1:
 
-        if st.button("🔐 Check Password Strength"):
+        if st.button(
+            "🔐 Check Password Strength"
+        ):
 
             if not password:
-                st.warning("Enter a sample password first.")
+
+                st.warning(
+                    "Enter a sample password first."
+                )
 
             else:
+
                 score = 0
 
                 if len(password) >= 8:
                     score += 1
 
-                if any(c.isupper() for c in password):
+                if any(
+                    c.isupper()
+                    for c in password
+                ):
                     score += 1
 
-                if any(c.islower() for c in password):
+                if any(
+                    c.islower()
+                    for c in password
+                ):
                     score += 1
 
-                if any(c.isdigit() for c in password):
+                if any(
+                    c.isdigit()
+                    for c in password
+                ):
                     score += 1
 
-                if any(not c.isalnum() for c in password):
+                if any(
+                    not c.isalnum()
+                    for c in password
+                ):
                     score += 1
+
 
                 if score <= 2:
-                    st.error("🔴 Password Strength: Weak")
+
+                    st.error(
+                        "🔴 Password Strength: Weak"
+                    )
 
                 elif score <= 4:
-                    st.warning("🟠 Password Strength: Medium")
+
+                    st.warning(
+                        "🟠 Password Strength: Medium"
+                    )
 
                 else:
-                    st.success("🟢 Password Strength: Strong")
+
+                    st.success(
+                        "🟢 Password Strength: Strong"
+                    )
+
 
     with c2:
 
-        if st.button("🔑 Generate SHA-256 Hash"):
+        if st.button(
+            "🔑 Generate SHA-256 Hash"
+        ):
 
             if not password:
-                st.warning("Enter a sample password first.")
+
+                st.warning(
+                    "Enter a sample password first."
+                )
 
             else:
-                hashed_password = hashlib.sha256(
-                    password.encode()
-                ).hexdigest()
 
-                st.success("SHA-256 Hash Generated")
-                st.code(hashed_password)
+                hashed_password = (
+                    hashlib.sha256(
+                        password.encode()
+                    ).hexdigest()
+                )
+
+                st.success(
+                    "✅ SHA-256 Hash Generated"
+                )
+
+                st.code(
+                    hashed_password
+                )
+
+
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_password"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()
 
 
 # =========================================================
 # SECURITY REPORT
 # =========================================================
-elif option == "📄 Security Report":
+
+elif st.session_state.page == "📄 Security Report":
 
     hero(
         "📄 Security Report",
@@ -684,16 +1479,14 @@ elif option == "📄 Security Report":
         card(
             "🔎",
             "Network Scan",
-            "Nmap was used locally to identify open ports "
-            "and running services.",
+            "Nmap was used locally to identify open ports and running services.",
             "card-blue"
         )
 
         card(
             "🛡️",
             "Firewall",
-            "pfSense firewall rules are presented "
-            "as a demonstration.",
+            "pfSense firewall rules are presented as a demonstration.",
             "card-pink"
         )
 
@@ -703,6 +1496,7 @@ elif option == "📄 Security Report":
             "Password strength and SHA-256 hashing demonstration.",
             "card-purple"
         )
+
 
     with c2:
 
@@ -727,16 +1521,66 @@ elif option == "📄 Security Report":
             "card-orange"
         )
 
-    st.markdown("## 🛡️ Recommendations")
 
-    st.success("✅ Use HTTPS/TLS for secure communication.")
-    st.success("✅ Block Telnet and use SSH.")
-    st.success("✅ Restrict unnecessary open ports.")
-    st.success("✅ Apply appropriate firewall rules.")
-    st.success("✅ Monitor network traffic regularly.")
-    st.success("✅ Use strong passwords.")
+    st.markdown(
+        "## 🛡️ Security Recommendations"
+    )
+
+    st.success(
+        "✅ Use HTTPS/TLS for secure communication."
+    )
+
+    st.success(
+        "✅ Block Telnet and use SSH."
+    )
+
+    st.success(
+        "✅ Restrict unnecessary open ports."
+    )
+
+    st.success(
+        "✅ Apply appropriate firewall rules."
+    )
+
+    st.success(
+        "✅ Monitor network traffic regularly."
+    )
+
+    st.success(
+        "✅ Use strong passwords."
+    )
+
 
     st.info(
-        "Nmap and Wireshark testing was completed locally. "
-        "The online Nmap and pfSense sections are demonstrations."
+        "Nmap and Wireshark testing was completed locally. The online Nmap and pfSense sections are demonstrations."
     )
+
+
+    st.markdown(
+        """
+        <div class="footer-box">
+
+        <b>INTERTEC SYSTEMS LLC</b>
+
+        <br><br>
+
+        Network Security Basics Project
+
+        <br>
+
+        Monitor • Analyze • Protect
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    if st.button(
+        "⬅ Back to Dashboard",
+        key="back_report"
+    ):
+        go_to(
+            "🏠 Dashboard"
+        )
+        st.rerun()

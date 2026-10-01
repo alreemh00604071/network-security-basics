@@ -4,142 +4,93 @@ import hashlib
 import glob
 from pathlib import Path
 
-
-st.code(
-                    hashed_password
-                )
-
-
-    if st.button(
-        "⬅ Back to Dashboard",
-        key="back_password"
-    ):
-        go_to(
-            "🏠 Dashboard"
-        )
-        st.rerun()
-
-
 # =========================================================
-# SECURITY REPORT
+# PAGE SETUP
 # =========================================================
 
-elif st.session_state.page == "📄 Security Report":
+st.set_page_config(
+    page_title="Intertec | Network Security",
+    page_icon="🛡️",
+    layout="wide"
+)
 
-    hero(
-        "📄 Security Report",
-        "Project findings and security recommendations."
-    )
+# =========================================================
+# LOGIN / ACCESS CONTROL
+# =========================================================
 
-    c1, c2 = st.columns(2)
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-    with c1:
+if "role" not in st.session_state:
+    st.session_state.role = None
 
-        card(
-            "🔎",
-            "Network Scan",
-            "Nmap was used locally to identify open ports and running services.",
-            "card-blue"
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 Dashboard"
+
+# Demo staff password. You can later set STAFF_PASSWORD in Streamlit Secrets.
+try:
+    STAFF_PASSWORD = st.secrets.get("STAFF_PASSWORD", "Staff123")
+except Exception:
+    STAFF_PASSWORD = "Staff123"
+
+
+def show_login():
+    st.markdown("## 🔐 Network Security Suite Login")
+    st.write("Please select your access type.")
+
+    role_choice = st.selectbox("Select Role", ["Guest", "Staff"])
+
+    if role_choice == "Guest":
+        st.info(
+            "Guest access includes Dashboard, Network Scan, "
+            "Traffic Monitoring and Security Report."
         )
-
-        card(
-            "🛡️",
-            "Firewall",
-            "pfSense firewall rules are presented as a demonstration.",
-            "card-pink"
-        )
-
-        card(
-            "🔑",
-            "Password Security",
-            "Password strength and SHA-256 hashing demonstration.",
-            "card-purple"
-        )
-
-
-    with c2:
-
-        card(
-            "📡",
-            "Traffic Monitoring",
-            "Wireshark was used locally with TCP, DNS and TLS filters.",
-            "card-green"
-        )
-
-        card(
-            "🌐",
-            "IP Tools",
-            "IPv4 and IPv6 address validation.",
-            "card-cyan"
-        )
-
-        card(
-            "⚠️",
-            "Security Findings",
-            "Potential risks are reviewed with security recommendations.",
-            "card-orange"
-        )
+        if st.button("Continue as Guest", use_container_width=True):
+            st.session_state.logged_in = True
+            st.session_state.role = "Guest"
+            st.session_state.page = "🏠 Dashboard"
+            st.rerun()
+    else:
+        st.info("Staff access includes all security tools.")
+        password = st.text_input("Enter Staff Password", type="password")
+        if st.button("Login as Staff", use_container_width=True):
+            if password == STAFF_PASSWORD:
+                st.session_state.logged_in = True
+                st.session_state.role = "Staff"
+                st.session_state.page = "🏠 Dashboard"
+                st.rerun()
+            else:
+                st.error("Incorrect staff password.")
 
 
-    st.markdown(
-        "## 🛡️ Security Recommendations"
-    )
-
-    st.success(
-        "✅ Use HTTPS/TLS for secure communication."
-    )
-
-    st.success(
-        "✅ Block Telnet and use SSH."
-    )
-
-    st.success(
-        "✅ Restrict unnecessary open ports."
-    )
-
-    st.success(
-        "✅ Apply appropriate firewall rules."
-    )
-
-    st.success(
-        "✅ Monitor network traffic regularly."
-    )
-
-    st.success(
-        "✅ Use strong passwords."
-    )
+if not st.session_state.logged_in:
+    show_login()
+    st.stop()
 
 
-    st.info(
-        "Nmap and Wireshark testing was completed locally. The online Nmap and pfSense sections are demonstrations."
-    )
+if st.session_state.role == "Staff":
+    pages = [
+        "🏠 Dashboard",
+        "🧰 Security Tools",
+        "🔎 Network Scan",
+        "📡 Traffic Monitoring",
+        "🛡️ Firewall",
+        "⚠️ Vulnerability Check",
+        "🌐 IP Tools",
+        "🔑 Password & Hash Tools",
+        "📄 Security Report"
+    ]
+else:
+    pages = [
+        "🏠 Dashboard",
+        "🔎 Network Scan",
+        "📡 Traffic Monitoring",
+        "📄 Security Report"
+    ]
+
+if st.session_state.page not in pages:
+    st.session_state.page = "🏠 Dashboard"
 
 
-    st.markdown(
-        """
-        <div class="footer-box">
-
-        <b>INTERTEC SYSTEMS LLC</b>
-
-        <br><br>
-
-        Network Security Basics Project
-
-        <br>
-
-        Monitor • Analyze • Protect
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-    if st.button(
-        "⬅ Back to Dashboard",
-        key="back_report"
-    ):
-        go_to(
-            "🏠 Dashboard"
-        )
-        st.rerun()
+def go_to(page):
+    if page in pages:

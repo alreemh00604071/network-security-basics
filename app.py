@@ -4,18 +4,22 @@ import hashlib
 import glob
 from pathlib import Path
 
+
 # =========================================================
 # PAGE SETUP
 # =========================================================
+
 st.set_page_config(
     page_title="Intertec | Network Security",
     page_icon="🛡️",
     layout="wide"
 )
 
+
 # =========================================================
 # SESSION STATE
 # =========================================================
+
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -25,10 +29,13 @@ if "role" not in st.session_state:
 if "page" not in st.session_state:
     st.session_state.page = "🏠 Dashboard"
 
+
 # =========================================================
-# HELPERS
+# LOGO FINDER
 # =========================================================
+
 def find_project_logo():
+
     preferred = [
         "network_security_suite_logo.png",
         "network_security_suite_logo.jpg",
@@ -36,79 +43,31 @@ def find_project_logo():
     ]
 
     for filename in preferred:
+
         if Path(filename).exists():
             return filename
 
     matches = sorted(
-        glob.glob("network_security_suite_logo*")
+        glob.glob(
+            "network_security_suite_logo*"
+        )
     )
 
-    return matches[0] if matches else None
+    if matches:
+        return matches[0]
 
-
-def hero(title, subtitle):
-
-    st.markdown(
-        f"""
-        <div class="hero">
-
-            <div class="hero-company">
-                INTERTEC SYSTEMS LLC
-            </div>
-
-            <div class="hero-title">
-                {title}
-            </div>
-
-            <div class="hero-subtitle">
-                {subtitle}
-            </div>
-
-            <div class="hero-tags">
-                🛡️ Network Security
-                &nbsp;&nbsp;
-                📡 Traffic Analysis
-                &nbsp;&nbsp;
-                🔐 Secure Infrastructure
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-def card(
-    icon,
-    title,
-    text,
-    color
-):
-
-    st.markdown(
-        f"""
-        <div class="card {color}">
-
-            <div class="card-title">
-                {icon} {title}
-            </div>
-
-            <div class="card-text">
-                {text}
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    return None
 
 
 # =========================================================
 # DESIGN
 # =========================================================
+
 st.markdown(
     """
     <style>
+
+    /* MAIN BACKGROUND */
 
     .stApp {
         background:
@@ -140,6 +99,8 @@ st.markdown(
     }
 
 
+    /* SIDEBAR */
+
     section[data-testid="stSidebar"] {
         background:
             linear-gradient(
@@ -149,7 +110,8 @@ st.markdown(
                 #f5f3ff 100%
             );
 
-        border-right: 1px solid #dbeafe;
+        border-right:
+            1px solid #dbeafe;
     }
 
 
@@ -170,6 +132,8 @@ st.markdown(
         color: #102a56;
     }
 
+
+    /* BUTTONS */
 
     .stButton > button {
 
@@ -207,13 +171,15 @@ st.markdown(
         color: white;
 
         transform:
-            translateY(-3px);
+            translateY(-4px);
 
         box-shadow:
             0 13px 27px
-            rgba(109,74,255,.30);
+            rgba(109,74,255,.32);
     }
 
+
+    /* METRIC CARDS */
 
     div[data-testid="stMetric"] {
 
@@ -243,6 +209,8 @@ st.markdown(
         border-radius: 14px;
     }
 
+
+    /* HERO */
 
     .hero {
 
@@ -368,6 +336,8 @@ st.markdown(
     }
 
 
+    /* TOOL CARDS */
+
     .card {
 
         background:
@@ -401,7 +371,8 @@ st.markdown(
     .card:hover {
 
         transform:
-            translateY(-6px);
+            translateY(-7px)
+            scale(1.01);
 
         box-shadow:
             0 16px 32px
@@ -491,19 +462,17 @@ st.markdown(
     }
 
 
+    /* FOOTER */
+
     .footer-box {
 
-        margin-top:
-            25px;
+        margin-top: 25px;
 
-        padding:
-            22px;
+        padding: 22px;
 
-        border-radius:
-            20px;
+        border-radius: 20px;
 
-        color:
-            white;
+        color: white;
 
         background:
             linear-gradient(
@@ -518,22 +487,6 @@ st.markdown(
             rgba(30,64,175,.18);
     }
 
-
-    .lock-note {
-
-        color:
-            #64748b;
-
-        font-size:
-            14px;
-
-        margin-top:
-            -4px;
-
-        margin-bottom:
-            10px;
-    }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -541,23 +494,90 @@ st.markdown(
 
 
 # =========================================================
-# LOGIN PAGE
+# UI FUNCTIONS
+# =========================================================
+
+def hero(title, subtitle):
+
+    st.markdown(
+        f"""
+        <div class="hero">
+
+            <div class="hero-company">
+                INTERTEC SYSTEMS LLC
+            </div>
+
+            <div class="hero-title">
+                {title}
+            </div>
+
+            <div class="hero-subtitle">
+                {subtitle}
+            </div>
+
+            <div class="hero-tags">
+
+                🛡️ Network Security
+
+                &nbsp;&nbsp;
+
+                📡 Traffic Analysis
+
+                &nbsp;&nbsp;
+
+                🔐 Secure Infrastructure
+
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def card(
+    icon,
+    title,
+    text,
+    color
+):
+
+    st.markdown(
+        f"""
+        <div class="card {color}">
+
+            <div class="card-title">
+                {icon} {title}
+            </div>
+
+            <div class="card-text">
+                {text}
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# LOGIN
 # =========================================================
 
 if not st.session_state.logged_in:
 
-    logo = find_project_logo()
+    project_logo = find_project_logo()
 
-    if logo:
+    if project_logo:
 
-        c1, c2, c3 = st.columns(
-            [1, 1.5, 1]
+        a, b, c = st.columns(
+            [1, 1.1, 1]
         )
 
-        with c2:
+        with b:
 
             st.image(
-                logo,
+                project_logo,
                 width=220
             )
 
@@ -568,8 +588,8 @@ if not st.session_state.logged_in:
     )
 
 
-    st.subheader(
-        "🔐 Login"
+    st.markdown(
+        "## 🔐 Login"
     )
 
 
@@ -585,7 +605,7 @@ if not st.session_state.logged_in:
     if role == "Guest":
 
         st.info(
-            "Guest access includes Dashboard, "
+            "Guest users can access the Dashboard, "
             "Network Scan, Traffic Monitoring, "
             "and Security Report."
         )
@@ -607,8 +627,8 @@ if not st.session_state.logged_in:
     else:
 
         st.info(
-            "Staff access includes all security "
-            "tools and protected sections."
+            "Staff users can access all "
+            "Network Security Suite tools."
         )
 
 
@@ -643,46 +663,52 @@ if not st.session_state.logged_in:
 
 
 # =========================================================
-# ROLE-BASED PAGES
+# ACCESS CONTROL
 # =========================================================
+
+staff_pages = [
+
+    "🏠 Dashboard",
+
+    "🧰 Security Tools",
+
+    "🔎 Network Scan",
+
+    "📡 Traffic Monitoring",
+
+    "🛡️ Firewall",
+
+    "⚠️ Vulnerability Check",
+
+    "🌐 IP Tools",
+
+    "🔑 Password & Hash Tools",
+
+    "📄 Security Report"
+
+]
+
+
+guest_pages = [
+
+    "🏠 Dashboard",
+
+    "🔎 Network Scan",
+
+    "📡 Traffic Monitoring",
+
+    "📄 Security Report"
+
+]
+
 
 if st.session_state.role == "Staff":
 
-    pages = [
-
-        "🏠 Dashboard",
-
-        "🧰 Security Tools",
-
-        "🔎 Network Scan",
-
-        "📡 Traffic Monitoring",
-
-        "🛡️ Firewall",
-
-        "⚠️ Vulnerability Check",
-
-        "🌐 IP Tools",
-
-        "🔑 Password & Hash Tools",
-
-        "📄 Security Report"
-
-    ]
+    pages = staff_pages
 
 else:
 
-    pages = [
-
-        "🏠 Dashboard",
-
-        "🔎 Network Scan",
-
-        "📡 Traffic Monitoring",
-
-        "📄 Security Report"
-
-    ]
+    pages = guest_pages
 
 
 if st.session_state.page not in pages:
@@ -724,11 +750,6 @@ else:
 
 st.sidebar.markdown(
     "## 🛡️ Security Console"
-)
-
-
-st.sidebar.success(
-    f"Logged in as: {st.session_state.role}"
 )
 
 
@@ -801,12 +822,12 @@ if st.session_state.page == "🏠 Dashboard":
     )
 
 
-    q1, q2, q3, q4 = st.columns(4)
+    q1, q2, q3, q4 = (
+        st.columns(4)
+    )
 
 
-    # -----------------------------------------------------
     # SECURITY TOOLS
-    # -----------------------------------------------------
 
     with q1:
 
@@ -817,7 +838,10 @@ if st.session_state.page == "🏠 Dashboard":
         )
 
 
-        if st.session_state.role == "Staff":
+        if (
+            st.session_state.role
+            == "Staff"
+        ):
 
             if st.button(
                 "🧰 View Tools",
@@ -832,19 +856,12 @@ if st.session_state.page == "🏠 Dashboard":
 
         else:
 
-            st.markdown(
-                """
-                <div class="lock-note">
-                    🔒 Staff access only
-                </div>
-                """,
-                unsafe_allow_html=True
+            st.caption(
+                "🔒 Staff access"
             )
 
 
-    # -----------------------------------------------------
     # WIRESHARK
-    # -----------------------------------------------------
 
     with q2:
 
@@ -867,9 +884,7 @@ if st.session_state.page == "🏠 Dashboard":
             st.rerun()
 
 
-    # -----------------------------------------------------
-    # FIREWALL
-    # -----------------------------------------------------
+    # PFSENSE
 
     with q3:
 
@@ -880,7 +895,10 @@ if st.session_state.page == "🏠 Dashboard":
         )
 
 
-        if st.session_state.role == "Staff":
+        if (
+            st.session_state.role
+            == "Staff"
+        ):
 
             if st.button(
                 "🛡️ Open pfSense",
@@ -895,19 +913,12 @@ if st.session_state.page == "🏠 Dashboard":
 
         else:
 
-            st.markdown(
-                """
-                <div class="lock-note">
-                    🔒 Staff access only
-                </div>
-                """,
-                unsafe_allow_html=True
+            st.caption(
+                "🔒 Staff access"
             )
 
 
-    # -----------------------------------------------------
     # NMAP
-    # -----------------------------------------------------
 
     with q4:
 
@@ -938,11 +949,13 @@ if st.session_state.page == "🏠 Dashboard":
     )
 
 
-    # -----------------------------------------------------
-    # FIRST ROW
-    # -----------------------------------------------------
+    # =====================================================
+    # SECURITY CARDS ROW 1
+    # =====================================================
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3 = (
+        st.columns(3)
+    )
 
 
     with c1:
@@ -999,7 +1012,10 @@ if st.session_state.page == "🏠 Dashboard":
         )
 
 
-        if st.session_state.role == "Staff":
+        if (
+            st.session_state.role
+            == "Staff"
+        ):
 
             if st.button(
                 "Open Firewall →",
@@ -1019,11 +1035,13 @@ if st.session_state.page == "🏠 Dashboard":
             )
 
 
-    # -----------------------------------------------------
-    # SECOND ROW
-    # -----------------------------------------------------
+    # =====================================================
+    # SECURITY CARDS ROW 2
+    # =====================================================
 
-    c4, c5, c6 = st.columns(3)
+    c4, c5, c6 = (
+        st.columns(3)
+    )
 
 
     with c4:
@@ -1036,7 +1054,10 @@ if st.session_state.page == "🏠 Dashboard":
         )
 
 
-        if st.session_state.role == "Staff":
+        if (
+            st.session_state.role
+            == "Staff"
+        ):
 
             if st.button(
                 "Run Vulnerability Check →",
@@ -1066,7 +1087,10 @@ if st.session_state.page == "🏠 Dashboard":
         )
 
 
-        if st.session_state.role == "Staff":
+        if (
+            st.session_state.role
+            == "Staff"
+        ):
 
             if st.button(
                 "Open IP Tools →",
@@ -1096,7 +1120,10 @@ if st.session_state.page == "🏠 Dashboard":
         )
 
 
-        if st.session_state.role == "Staff":
+        if (
+            st.session_state.role
+            == "Staff"
+        ):
 
             if st.button(
                 "Open Password Tools →",
@@ -1138,7 +1165,7 @@ if st.session_state.page == "🏠 Dashboard":
 
 
 # =========================================================
-# SECURITY TOOLS - STAFF ONLY
+# SECURITY TOOLS
 # =========================================================
 
 elif st.session_state.page == "🧰 Security Tools":
@@ -1155,6 +1182,12 @@ elif st.session_state.page == "🧰 Security Tools":
     hero(
         "🧰 Security Tools",
         "Choose a network security tool to open."
+    )
+
+
+    st.info(
+        "Select one of the available "
+        "security tools below."
     )
 
 
@@ -1548,14 +1581,15 @@ elif st.session_state.page == "📡 Traffic Monitoring":
 
 
     st.info(
-        "These values are based on "
-        "Wireshark screenshots from local testing. "
-        "The screenshots were taken at different times."
+        "These values are based on Wireshark "
+        "screenshots from local testing. "
+        "The screenshots were taken at "
+        "different times."
     )
 
 
 # =========================================================
-# FIREWALL - STAFF ONLY
+# FIREWALL
 # =========================================================
 
 elif st.session_state.page == "🛡️ Firewall":
@@ -1714,7 +1748,7 @@ elif st.session_state.page == "🛡️ Firewall":
 
 
 # =========================================================
-# VULNERABILITY CHECK - STAFF ONLY
+# VULNERABILITY CHECK
 # =========================================================
 
 elif st.session_state.page == "⚠️ Vulnerability Check":
@@ -1787,7 +1821,7 @@ elif st.session_state.page == "⚠️ Vulnerability Check":
 
 
 # =========================================================
-# IP TOOLS - STAFF ONLY
+# IP TOOLS
 # =========================================================
 
 elif st.session_state.page == "🌐 IP Tools":
@@ -1831,7 +1865,9 @@ elif st.session_state.page == "🌐 IP Tools":
             )
 
 
-            c1, c2, c3 = st.columns(3)
+            c1, c2, c3 = (
+                st.columns(3)
+            )
 
 
             with c1:
@@ -1889,12 +1925,13 @@ elif st.session_state.page == "🌐 IP Tools":
 
             st.error(
                 "❌ Invalid IP address. "
-                "Enter a valid IPv4 or IPv6 address."
+                "Enter a valid IPv4 "
+                "or IPv6 address."
             )
 
 
 # =========================================================
-# PASSWORD & HASH TOOLS - STAFF ONLY
+# PASSWORD & HASH TOOLS
 # =========================================================
 
 elif st.session_state.page == "🔑 Password & Hash Tools":
@@ -1947,7 +1984,6 @@ elif st.session_state.page == "🔑 Password & Hash Tools":
 
 
                 if len(password) >= 8:
-
                     score += 1
 
 

@@ -2,7 +2,6 @@ import streamlit as st
 import ipaddress
 import hashlib
 import glob
-import textwrap
 from pathlib import Path
 
 
@@ -32,7 +31,7 @@ if "page" not in st.session_state:
 
 
 # =========================================================
-# USERS / PASSWORDS
+# USERS
 # =========================================================
 
 USERS = {
@@ -43,7 +42,7 @@ USERS = {
 
 
 # =========================================================
-# LOGO FINDER
+# FIND PROJECT LOGO
 # =========================================================
 
 def find_project_logo():
@@ -159,6 +158,9 @@ div[data-testid="stAlert"] {
     border-radius: 17px;
 }
 
+
+/* HERO */
+
 .hero {
     position: relative;
     overflow: hidden;
@@ -232,6 +234,9 @@ div[data-testid="stAlert"] {
     margin-top: 22px;
 }
 
+
+/* CARDS */
+
 .card {
     border-radius: 20px;
     padding: 21px;
@@ -246,7 +251,6 @@ div[data-testid="stAlert"] {
 
 .card:hover {
     transform: translateY(-5px);
-
     box-shadow:
         0 16px 32px rgba(37,99,235,.17);
 }
@@ -340,57 +344,41 @@ div[data-testid="stAlert"] {
 
 
 # =========================================================
-# UI FUNCTIONS
+# HERO FUNCTION
 # =========================================================
 
 def hero(title, subtitle):
 
-    html = f"""
-<div class="hero">
-    <div class="hero-company">
-        INTERTEC SYSTEMS LLC
-    </div>
-
-    <div class="hero-title">
-        {title}
-    </div>
-
-    <div class="hero-subtitle">
-        {subtitle}
-    </div>
-
-    <div class="hero-tags">
-        🛡️ Network Security
-        &nbsp;&nbsp;
-        📡 Traffic Analysis
-        &nbsp;&nbsp;
-        🔐 Secure Infrastructure
-    </div>
-</div>
-"""
-
     st.markdown(
-        textwrap.dedent(html),
+        f"""
+<div class="hero">
+<div class="hero-company">INTERTEC SYSTEMS LLC</div>
+<div class="hero-title">{title}</div>
+<div class="hero-subtitle">{subtitle}</div>
+<div class="hero-tags">
+🛡️ Network Security &nbsp;&nbsp;
+📡 Traffic Analysis &nbsp;&nbsp;
+🔐 Secure Infrastructure
+</div>
+</div>
+""",
         unsafe_allow_html=True
     )
 
 
+# =========================================================
+# CARD FUNCTION
+# =========================================================
+
 def card(icon, title, text, color):
 
-    html = f"""
-<div class="card {color}">
-    <div class="card-title">
-        {icon} {title}
-    </div>
-
-    <div class="card-text">
-        {text}
-    </div>
-</div>
-"""
-
     st.markdown(
-        textwrap.dedent(html),
+        f"""
+<div class="card {color}">
+<div class="card-title">{icon} {title}</div>
+<div class="card-text">{text}</div>
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -405,11 +393,12 @@ if not st.session_state.logged_in:
 
     if project_logo:
 
-        c1, c2, c3 = st.columns(
-            [1, 1.2, 1]
+        col1, col2, col3 = st.columns(
+            [1, 1, 1]
         )
 
-        with c2:
+        with col2:
+
             st.image(
                 project_logo,
                 width=210
@@ -573,6 +562,7 @@ st.sidebar.caption(
     "INTERTEC SYSTEMS LLC"
 )
 
+
 st.sidebar.caption(
     "Network Security Basics Project"
 )
@@ -686,9 +676,7 @@ if st.session_state.page == "🏠 Dashboard":
     )
 
 
-    # =====================================================
-    # ROW 1
-    # =====================================================
+    # FIRST ROW
 
     c1, c2, c3 = st.columns(3)
 
@@ -756,9 +744,7 @@ if st.session_state.page == "🏠 Dashboard":
             st.rerun()
 
 
-    # =====================================================
-    # ROW 2
-    # =====================================================
+    # SECOND ROW
 
     c4, c5, c6 = st.columns(3)
 
@@ -789,7 +775,7 @@ if st.session_state.page == "🏠 Dashboard":
         card(
             "🌐",
             "IP Tools",
-            "Validate IPv4 and IPv6 addresses and identify their type.",
+            "Validate IPv4 and IPv6 addresses.",
             "card-purple"
         )
 
@@ -826,21 +812,17 @@ if st.session_state.page == "🏠 Dashboard":
             st.rerun()
 
 
-    footer_html = """
-<div class="footer-box">
-    <b>🔐 Network Security Basics</b>
-    <br><br>
-    Learn to detect security risks,
-    analyze network traffic,
-    protect network services,
-    and apply security recommendations.
-</div>
-"""
-
     st.markdown(
-        textwrap.dedent(
-            footer_html
-        ),
+        """
+<div class="footer-box">
+<b>🔐 Network Security Basics</b>
+<br><br>
+Learn to detect security risks,
+analyze network traffic,
+protect network services,
+and apply security recommendations.
+</div>
+""",
         unsafe_allow_html=True
     )
 
@@ -869,17 +851,6 @@ elif st.session_state.page == "🧰 Security Tools":
             "card-blue"
         )
 
-        if st.button(
-            "Open Network Scan →",
-            key="tools_nmap"
-        ):
-
-            go_to(
-                "🔎 Network Scan"
-            )
-
-            st.rerun()
-
 
     with c2:
 
@@ -890,17 +861,6 @@ elif st.session_state.page == "🧰 Security Tools":
             "card-green"
         )
 
-        if st.button(
-            "Open Traffic Monitoring →",
-            key="tools_wireshark"
-        ):
-
-            go_to(
-                "📡 Traffic Monitoring"
-            )
-
-            st.rerun()
-
 
     with c3:
 
@@ -910,17 +870,6 @@ elif st.session_state.page == "🧰 Security Tools":
             "Review firewall rules using a pfSense demonstration.",
             "card-pink"
         )
-
-        if st.button(
-            "Open Firewall →",
-            key="tools_firewall"
-        ):
-
-            go_to(
-                "🛡️ Firewall"
-            )
-
-            st.rerun()
 
 
     c4, c5, c6 = st.columns(3)
@@ -935,17 +884,6 @@ elif st.session_state.page == "🧰 Security Tools":
             "card-orange"
         )
 
-        if st.button(
-            "Open Vulnerability Check →",
-            key="tools_vulnerability"
-        ):
-
-            go_to(
-                "⚠️ Vulnerability Check"
-            )
-
-            st.rerun()
-
 
     with c5:
 
@@ -956,17 +894,6 @@ elif st.session_state.page == "🧰 Security Tools":
             "card-purple"
         )
 
-        if st.button(
-            "Open IP Tools →",
-            key="tools_ip"
-        ):
-
-            go_to(
-                "🌐 IP Tools"
-            )
-
-            st.rerun()
-
 
     with c6:
 
@@ -976,17 +903,6 @@ elif st.session_state.page == "🧰 Security Tools":
             "Check password strength and SHA-256 hashing.",
             "card-cyan"
         )
-
-        if st.button(
-            "Open Password Tools →",
-            key="tools_password"
-        ):
-
-            go_to(
-                "🔑 Password & Hash Tools"
-            )
-
-            st.rerun()
 
 
 # =========================================================
@@ -1002,8 +918,7 @@ elif st.session_state.page == "🔎 Network Scan":
 
 
     st.info(
-        "Tool: Nmap — "
-        "Nmap testing was completed locally."
+        "Tool: Nmap — Nmap testing was completed locally."
     )
 
 
@@ -1020,6 +935,7 @@ elif st.session_state.page == "🔎 Network Scan":
         st.success(
             "✅ Demo scan completed."
         )
+
 
         st.code(
             f"""Nmap Security Scan
@@ -1175,41 +1091,6 @@ elif st.session_state.page == "📡 Traffic Monitoring":
         )
 
 
-    st.table(
-        {
-            "Protocol": [
-                "TCP",
-                "DNS",
-                "TLS"
-            ],
-
-            "Displayed Packets": [
-                189,
-                20,
-                610
-            ],
-
-            "Total Packets": [
-                284,
-                1619,
-                3289
-            ],
-
-            "Displayed Percentage": [
-                "66.5%",
-                "1.2%",
-                "18.5%"
-            ]
-        }
-    )
-
-
-    st.info(
-        "These values are based on "
-        "Wireshark screenshots from local testing."
-    )
-
-
 # =========================================================
 # FIREWALL
 # =========================================================
@@ -1278,30 +1159,11 @@ elif st.session_state.page == "🛡️ Firewall":
 
 
     firewall_rules = {
-        "HTTPS": (
-            "443",
-            "ALLOW"
-        ),
-
-        "DNS": (
-            "53",
-            "ALLOW"
-        ),
-
-        "SSH": (
-            "22",
-            "ALLOW"
-        ),
-
-        "HTTP": (
-            "80",
-            "REVIEW"
-        ),
-
-        "Telnet": (
-            "23",
-            "BLOCK"
-        )
+        "HTTPS": ("443", "ALLOW"),
+        "DNS": ("53", "ALLOW"),
+        "SSH": ("22", "ALLOW"),
+        "HTTP": ("80", "REVIEW"),
+        "Telnet": ("23", "BLOCK")
     }
 
 
@@ -1309,16 +1171,13 @@ elif st.session_state.page == "🛡️ Firewall":
         "🛡️ Check Firewall Rule"
     ):
 
-        port, action = (
-            firewall_rules[
-                service
-            ]
-        )
+        port, action = firewall_rules[service]
 
 
         st.write(
             f"**Service:** {service}"
         )
+
 
         st.write(
             f"**Port:** {port}"
@@ -1363,45 +1222,29 @@ elif st.session_state.page == "⚠️ Vulnerability Check":
     ):
 
         st.warning(
-            "⚠️ Port 445 — "
-            "File sharing service may be exposed."
+            "⚠️ Port 445 — File sharing service may be exposed."
         )
 
-
         st.success(
-            "Recommendation: "
-            "Restrict access to trusted devices."
+            "Recommendation: Restrict access to trusted devices."
         )
 
 
         st.warning(
-            "⚠️ Telnet Port 23 — "
-            "Unencrypted remote access."
+            "⚠️ Telnet Port 23 — Unencrypted remote access."
         )
 
-
         st.success(
-            "Recommendation: "
-            "Block Telnet and use SSH."
+            "Recommendation: Block Telnet and use SSH."
         )
 
 
         st.warning(
-            "⚠️ HTTP Port 80 — "
-            "Unencrypted web traffic."
+            "⚠️ HTTP Port 80 — Unencrypted web traffic."
         )
-
 
         st.success(
-            "Recommendation: "
-            "Use HTTPS/TLS."
-        )
-
-
-        st.info(
-            "These are demonstration findings. "
-            "Further testing is required "
-            "to confirm vulnerabilities."
+            "Recommendation: Use HTTPS/TLS."
         )
 
 
@@ -1429,10 +1272,8 @@ elif st.session_state.page == "🌐 IP Tools":
 
         try:
 
-            address = (
-                ipaddress.ip_address(
-                    ip_input.strip()
-                )
+            address = ipaddress.ip_address(
+                ip_input.strip()
             )
 
 
@@ -1474,26 +1315,6 @@ elif st.session_state.page == "🌐 IP Tools":
                 )
 
 
-            st.write(
-                "**Loopback:**",
-                (
-                    "Yes"
-                    if address.is_loopback
-                    else "No"
-                )
-            )
-
-
-            st.write(
-                "**Multicast:**",
-                (
-                    "Yes"
-                    if address.is_multicast
-                    else "No"
-                )
-            )
-
-
         except ValueError:
 
             st.error(
@@ -1502,7 +1323,7 @@ elif st.session_state.page == "🌐 IP Tools":
 
 
 # =========================================================
-# PASSWORD & HASH TOOLS
+# PASSWORD & HASH
 # =========================================================
 
 elif st.session_state.page == "🔑 Password & Hash Tools":
@@ -1544,10 +1365,8 @@ elif st.session_state.page == "🔑 Password & Hash Tools":
 
                 score = 0
 
-
                 if len(password) >= 8:
                     score += 1
-
 
                 if any(
                     c.isupper()
@@ -1555,20 +1374,17 @@ elif st.session_state.page == "🔑 Password & Hash Tools":
                 ):
                     score += 1
 
-
                 if any(
                     c.islower()
                     for c in password
                 ):
                     score += 1
 
-
                 if any(
                     c.isdigit()
                     for c in password
                 ):
                     score += 1
-
 
                 if any(
                     not c.isalnum()
@@ -1612,11 +1428,9 @@ elif st.session_state.page == "🔑 Password & Hash Tools":
 
             else:
 
-                hashed_password = (
-                    hashlib.sha256(
-                        password.encode()
-                    ).hexdigest()
-                )
+                hashed_password = hashlib.sha256(
+                    password.encode()
+                ).hexdigest()
 
 
                 st.success(
@@ -1728,24 +1542,19 @@ elif st.session_state.page == "📄 Security Report":
 
     st.info(
         "Nmap and Wireshark testing was completed locally. "
-        "The online Nmap and pfSense sections "
-        "are demonstrations."
+        "The online Nmap and pfSense sections are demonstrations."
     )
 
 
-    report_footer = """
-<div class="footer-box">
-    <b>INTERTEC SYSTEMS LLC</b>
-    <br><br>
-    Network Security Basics Project
-    <br>
-    Monitor • Analyze • Protect
-</div>
-"""
-
     st.markdown(
-        textwrap.dedent(
-            report_footer
-        ),
+        """
+<div class="footer-box">
+<b>INTERTEC SYSTEMS LLC</b>
+<br><br>
+Network Security Basics Project
+<br>
+Monitor • Analyze • Protect
+</div>
+""",
         unsafe_allow_html=True
     )

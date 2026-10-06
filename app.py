@@ -32,7 +32,18 @@ if "page" not in st.session_state:
 
 
 # =========================================================
-# LOGO
+# USERS / PASSWORDS
+# =========================================================
+
+USERS = {
+    "Staff": "Staff123",
+    "Admin": "Admin123",
+    "Manager": "Manager123"
+}
+
+
+# =========================================================
+# LOGO FINDER
 # =========================================================
 
 def find_project_logo():
@@ -154,6 +165,7 @@ div[data-testid="stAlert"] {
     padding: 32px 36px;
     margin-bottom: 24px;
     border-radius: 25px;
+
     background:
         radial-gradient(
             circle at 88% 25%,
@@ -166,6 +178,7 @@ div[data-testid="stAlert"] {
             #123d85 58%,
             #7047eb 100%
         );
+
     box-shadow:
         0 16px 38px rgba(30,64,175,.25);
 }
@@ -224,13 +237,16 @@ div[data-testid="stAlert"] {
     padding: 21px;
     min-height: 145px;
     margin-bottom: 15px;
+
     box-shadow:
         0 8px 24px rgba(15,46,90,.09);
+
     transition: all .25s ease;
 }
 
 .card:hover {
     transform: translateY(-5px);
+
     box-shadow:
         0 16px 32px rgba(37,99,235,.17);
 }
@@ -307,6 +323,7 @@ div[data-testid="stAlert"] {
     padding: 22px;
     border-radius: 20px;
     color: white;
+
     background:
         linear-gradient(
             100deg,
@@ -330,9 +347,18 @@ def hero(title, subtitle):
 
     html = f"""
 <div class="hero">
-    <div class="hero-company">INTERTEC SYSTEMS LLC</div>
-    <div class="hero-title">{title}</div>
-    <div class="hero-subtitle">{subtitle}</div>
+    <div class="hero-company">
+        INTERTEC SYSTEMS LLC
+    </div>
+
+    <div class="hero-title">
+        {title}
+    </div>
+
+    <div class="hero-subtitle">
+        {subtitle}
+    </div>
+
     <div class="hero-tags">
         🛡️ Network Security
         &nbsp;&nbsp;
@@ -353,8 +379,13 @@ def card(icon, title, text, color):
 
     html = f"""
 <div class="card {color}">
-    <div class="card-title">{icon} {title}</div>
-    <div class="card-text">{text}</div>
+    <div class="card-title">
+        {icon} {title}
+    </div>
+
+    <div class="card-text">
+        {text}
+    </div>
 </div>
 """
 
@@ -384,77 +415,61 @@ if not st.session_state.logged_in:
                 width=210
             )
 
+
     hero(
         "🛡️ Network Security Suite",
-        "Secure access for Guest and Staff."
+        "Secure access for Staff, Admin and Manager."
     )
 
-    st.markdown("## 🔐 Login")
+
+    st.markdown(
+        "## 🔐 Login"
+    )
+
 
     role = st.selectbox(
         "Select Access Type",
         [
-            "Guest",
-            "Staff"
+            "Staff",
+            "Admin",
+            "Manager"
         ]
     )
 
-    if role == "Guest":
 
-        st.info(
-            "Guest access includes Dashboard, "
-            "Network Scan, Traffic Monitoring "
-            "and Security Report."
-        )
+    password = st.text_input(
+        f"{role} Password",
+        type="password"
+    )
 
-        if st.button(
-            "Continue as Guest"
-        ):
+
+    if st.button(
+        f"Login as {role}"
+    ):
+
+        if password == USERS[role]:
 
             st.session_state.logged_in = True
-            st.session_state.role = "Guest"
+            st.session_state.role = role
             st.session_state.page = "🏠 Dashboard"
 
             st.rerun()
 
-    else:
+        else:
 
-        st.info(
-            "Staff access includes all "
-            "Network Security Suite tools."
-        )
+            st.error(
+                f"Incorrect {role} password."
+            )
 
-        password = st.text_input(
-            "Staff Password",
-            type="password"
-        )
-
-        if st.button(
-            "Login as Staff"
-        ):
-
-            if password == "Staff123":
-
-                st.session_state.logged_in = True
-                st.session_state.role = "Staff"
-                st.session_state.page = "🏠 Dashboard"
-
-                st.rerun()
-
-            else:
-
-                st.error(
-                    "Incorrect staff password."
-                )
 
     st.stop()
 
 
 # =========================================================
-# ACCESS CONTROL
+# PAGES
 # =========================================================
 
-staff_pages = [
+pages = [
     "🏠 Dashboard",
     "🧰 Security Tools",
     "🔎 Network Scan",
@@ -467,30 +482,19 @@ staff_pages = [
 ]
 
 
-guest_pages = [
-    "🏠 Dashboard",
-    "🔎 Network Scan",
-    "📡 Traffic Monitoring",
-    "📄 Security Report"
-]
-
-
-if st.session_state.role == "Staff":
-    pages = staff_pages
-else:
-    pages = guest_pages
-
-
 if st.session_state.page not in pages:
+
     st.session_state.page = "🏠 Dashboard"
 
 
 def go_to(page):
 
     if page in pages:
+
         st.session_state.page = page
 
     else:
+
         st.session_state.page = "🏠 Dashboard"
 
 
@@ -517,6 +521,11 @@ else:
 
 st.sidebar.markdown(
     "## 🛡️ Security Console"
+)
+
+
+st.sidebar.success(
+    f"Access: {st.session_state.role}"
 )
 
 
@@ -602,19 +611,11 @@ if st.session_state.page == "🏠 Dashboard":
             key="quick_tools"
         ):
 
-            if st.session_state.role == "Staff":
+            go_to(
+                "🧰 Security Tools"
+            )
 
-                go_to(
-                    "🧰 Security Tools"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "🔒 Staff access only."
-                )
+            st.rerun()
 
 
     with q2:
@@ -650,19 +651,11 @@ if st.session_state.page == "🏠 Dashboard":
             key="quick_firewall"
         ):
 
-            if st.session_state.role == "Staff":
+            go_to(
+                "🛡️ Firewall"
+            )
 
-                go_to(
-                    "🛡️ Firewall"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "🔒 Staff access only."
-                )
+            st.rerun()
 
 
     with q4:
@@ -694,7 +687,7 @@ if st.session_state.page == "🏠 Dashboard":
 
 
     # =====================================================
-    # FIRST ROW
+    # ROW 1
     # =====================================================
 
     c1, c2, c3 = st.columns(3)
@@ -756,23 +749,15 @@ if st.session_state.page == "🏠 Dashboard":
             key="card_firewall"
         ):
 
-            if st.session_state.role == "Staff":
+            go_to(
+                "🛡️ Firewall"
+            )
 
-                go_to(
-                    "🛡️ Firewall"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "🔒 This tool is available for Staff only."
-                )
+            st.rerun()
 
 
     # =====================================================
-    # SECOND ROW
+    # ROW 2
     # =====================================================
 
     c4, c5, c6 = st.columns(3)
@@ -792,19 +777,11 @@ if st.session_state.page == "🏠 Dashboard":
             key="card_vulnerability"
         ):
 
-            if st.session_state.role == "Staff":
+            go_to(
+                "⚠️ Vulnerability Check"
+            )
 
-                go_to(
-                    "⚠️ Vulnerability Check"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "🔒 This tool is available for Staff only."
-                )
+            st.rerun()
 
 
     with c5:
@@ -821,19 +798,11 @@ if st.session_state.page == "🏠 Dashboard":
             key="card_ip"
         ):
 
-            if st.session_state.role == "Staff":
+            go_to(
+                "🌐 IP Tools"
+            )
 
-                go_to(
-                    "🌐 IP Tools"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "🔒 This tool is available for Staff only."
-                )
+            st.rerun()
 
 
     with c6:
@@ -850,19 +819,11 @@ if st.session_state.page == "🏠 Dashboard":
             key="card_password"
         ):
 
-            if st.session_state.role == "Staff":
+            go_to(
+                "🔑 Password & Hash Tools"
+            )
 
-                go_to(
-                    "🔑 Password & Hash Tools"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.warning(
-                    "🔒 This tool is available for Staff only."
-                )
+            st.rerun()
 
 
     footer_html = """
@@ -889,15 +850,6 @@ if st.session_state.page == "🏠 Dashboard":
 # =========================================================
 
 elif st.session_state.page == "🧰 Security Tools":
-
-    if st.session_state.role != "Staff":
-
-        st.error(
-            "Staff access only."
-        )
-
-        st.stop()
-
 
     hero(
         "🧰 Security Tools",
@@ -1084,6 +1036,7 @@ Scan Status: Completed
 """
         )
 
+
         st.warning(
             "Open ports should be reviewed "
             "to confirm that they are required."
@@ -1164,20 +1117,11 @@ elif st.session_state.page == "📡 Traffic Monitoring":
 
 
     filters = {
-        "TCP":
-            "tcp",
-
-        "DNS":
-            "dns",
-
-        "TLS":
-            "tls",
-
-        "TCP SYN":
-            "tcp.flags.syn == 1",
-
-        "Large TCP Packets":
-            "tcp.len > 10000"
+        "TCP": "tcp",
+        "DNS": "dns",
+        "TLS": "tls",
+        "TCP SYN": "tcp.flags.syn == 1",
+        "Large TCP Packets": "tcp.len > 10000"
     }
 
 
@@ -1271,15 +1215,6 @@ elif st.session_state.page == "📡 Traffic Monitoring":
 # =========================================================
 
 elif st.session_state.page == "🛡️ Firewall":
-
-    if st.session_state.role != "Staff":
-
-        st.error(
-            "Staff access only."
-        )
-
-        st.stop()
-
 
     hero(
         "🛡️ Firewall Security",
@@ -1380,6 +1315,7 @@ elif st.session_state.page == "🛡️ Firewall":
             ]
         )
 
+
         st.write(
             f"**Service:** {service}"
         )
@@ -1416,15 +1352,6 @@ elif st.session_state.page == "🛡️ Firewall":
 
 elif st.session_state.page == "⚠️ Vulnerability Check":
 
-    if st.session_state.role != "Staff":
-
-        st.error(
-            "Staff access only."
-        )
-
-        st.stop()
-
-
     hero(
         "⚠️ Vulnerability Check",
         "Review potential network security risks."
@@ -1440,6 +1367,7 @@ elif st.session_state.page == "⚠️ Vulnerability Check":
             "File sharing service may be exposed."
         )
 
+
         st.success(
             "Recommendation: "
             "Restrict access to trusted devices."
@@ -1451,6 +1379,7 @@ elif st.session_state.page == "⚠️ Vulnerability Check":
             "Unencrypted remote access."
         )
 
+
         st.success(
             "Recommendation: "
             "Block Telnet and use SSH."
@@ -1461,6 +1390,7 @@ elif st.session_state.page == "⚠️ Vulnerability Check":
             "⚠️ HTTP Port 80 — "
             "Unencrypted web traffic."
         )
+
 
         st.success(
             "Recommendation: "
@@ -1480,15 +1410,6 @@ elif st.session_state.page == "⚠️ Vulnerability Check":
 # =========================================================
 
 elif st.session_state.page == "🌐 IP Tools":
-
-    if st.session_state.role != "Staff":
-
-        st.error(
-            "Staff access only."
-        )
-
-        st.stop()
-
 
     hero(
         "🌐 IP Address Analyzer",
@@ -1513,6 +1434,7 @@ elif st.session_state.page == "🌐 IP Tools":
                     ip_input.strip()
                 )
             )
+
 
             st.success(
                 "✅ Valid IP Address"
@@ -1562,6 +1484,16 @@ elif st.session_state.page == "🌐 IP Tools":
             )
 
 
+            st.write(
+                "**Multicast:**",
+                (
+                    "Yes"
+                    if address.is_multicast
+                    else "No"
+                )
+            )
+
+
         except ValueError:
 
             st.error(
@@ -1570,19 +1502,10 @@ elif st.session_state.page == "🌐 IP Tools":
 
 
 # =========================================================
-# PASSWORD & HASH
+# PASSWORD & HASH TOOLS
 # =========================================================
 
 elif st.session_state.page == "🔑 Password & Hash Tools":
-
-    if st.session_state.role != "Staff":
-
-        st.error(
-            "Staff access only."
-        )
-
-        st.stop()
-
 
     hero(
         "🔑 Password & Hash Tools",
@@ -1695,9 +1618,11 @@ elif st.session_state.page == "🔑 Password & Hash Tools":
                     ).hexdigest()
                 )
 
+
                 st.success(
                     "✅ SHA-256 Hash Generated"
                 )
+
 
                 st.code(
                     hashed_password
@@ -1728,12 +1653,14 @@ elif st.session_state.page == "📄 Security Report":
             "card-blue"
         )
 
+
         card(
             "🛡️",
             "Firewall",
             "pfSense firewall rules are presented as a demonstration.",
             "card-pink"
         )
+
 
         card(
             "🔑",
@@ -1752,12 +1679,14 @@ elif st.session_state.page == "📄 Security Report":
             "card-green"
         )
 
+
         card(
             "🌐",
             "IP Tools",
             "IPv4 and IPv6 address validation.",
             "card-cyan"
         )
+
 
         card(
             "⚠️",

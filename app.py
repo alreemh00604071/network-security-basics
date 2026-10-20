@@ -1,56 +1,4 @@
 
-شكلك نسيت
-هيه 😭 فهمت الحين شو تقصدين.
-
-إنتي ما كنتي تسألين هل الكود Task ولا لا. إنتي طرّشتيلي كود برنامج Network Security Suite لأن هذا هو المشروع اللي كنا نشتغل عليه، والمشرفة Marwah قالت لكم:
-
-Troubleshoot any network connectivity
-Choose a backup method and tool
-فاللي المفروض نسويه الحين هو نكمل نطوّر البرنامج نفسه ونضيف له جزء يناسب هالكلام، مو أشرح لج إن الكود مش Task. والبرنامج أصلًا جزء من مشروع Network Security Basics حقكم.
-
-الحين نقدر نكمل من الكود اللي طرّشتيه ونضيف له مثلاً قسمين داخل البرنامج:
-Network Troubleshooting + Backup Tool / Backup Method.
-
-إذا تبين، أقدر أعطيج الكود كامل المعدّل ونضيفهم مباشرة داخل الـsidebar مع باقي الأدوات.
-
-User attachment
-
-Pasted text(20261020-054445).txt
-Document
-صح، الحين الصورة وضحت المطلوب بالضبط ✅
-
-Marwah عطتكم شيئين تضيفونهم/تطبقونهم في المشروع:
-
-Troubleshoot any network connectivity
-يعني نضيف في البرنامج صفحة مثل 🛠️ Network Troubleshooting تساعد المستخدم يفحص مشكلة اتصال مثل:
-IP address
-Subnet mask
-Default gateway
-DNS
-Ping result
-وبعدين تعطي Possible Cause + Recommended Solution
-Choose a backup method and tool
-أنسب شي لمشروعكم نخليه:
-Backup Method: Configuration Backup
-Tool: Network Security Suite / Python
-ونضيف صفحة 💾 Backup & Recovery تقدر تسوي backup لإعدادات الشبكة وتنزلها كملف، مع معلومات مثل:
-
-Router IP
-PC IPs
-Gateway
-Firewall rules
-Date/time of backup
-زر Create Backup
-زر Download Backup
-وهذا يناسب برنامجكم الحالي لأن عندكم أصلًا 7 أدوات وصفحات Network Scan وTraffic Monitoring وFirewall وغيرها. 
-
-بعد الإضافة يصير عندكم 9 أدوات بدل 7:
-Network Troubleshooting + Backup & Recovery.
-
-والأهم: في النسخة الأونلاين نخلي الـtroubleshooting والـbackup demonstration/configuration tools، وما ندعي إن Streamlit يفحص أجهزة الشركة الحقيقية.
-
-الخطوة الجاية: نعدل الكود اللي طرّشتيه ونضيف الصفحتين في الـsidebar والـdashboard، ونخلي شكلهم نفس تصميم برنامجج الحالي.
-
 هيه
 تمام ✅ بنضيف Network Troubleshooting و Backup & Recovery على نفس برنامجج الحالي.
 
@@ -222,134 +170,219 @@ Network Security Suite
 
 app_updated_network_security.py
 Code
+User attachment
+؟
+هيه، الخطأ واضح 👌
 
+في ملف app.py انحط كلام عربي عادي داخل الكود في السطر 3، ومعاه الإيموجي 😭، وPython حاول يشغله ككود، عشان جي طلع:
 
+SyntaxError: invalid character '😭'
 
+سوي جي بالضبط:
+
+افتحي app.py في GitHub.
+من أول الملف، لازم البداية تكون فقط بهالشكل:
 import streamlit as st
 import ipaddress
 import hashlib
 import glob
 from pathlib import Path
 
+امسحي أي كلام عربي أو شرح أو إيموجي موجود فوق أو بين هالأسطر، خصوصًا الجملة اللي ظاهرة في الخطأ.
+بعدها سوي Commit changes.
+ارجعي Streamlit وسوي Refresh.
+لا تمسحين باقي الكود، بس نظفي أول الأسطر.
 
-# =========================================================
-# PAGE SETUP
-# =========================================================
+إذا تبين، طرشيلي صورة أول 10 أسطر من app.py وأنا أقولج بالضبط شو تمسحين.
 
-st.set_page_config(
-    page_title="Intertec | Network Security",
-    page_icon="🛡️",
-    layout="wide"
+User attachment
+ليش الكود في عربي
+لأن اللي انلصق في app.py مو الكود بروحه 😭 — انلصق جزء من شرحي بالعربي مع الكود.
+
+واضح من الصورة إن الأسطر 30–55 فيها كلام مثل:
+
+Possible Cause + Recommended Solution
+Choose a backup method and tool
+شرح عربي عن الـbackup
+كلام عن إن الأدوات بتصير 9
+هذا كله شرح مني، مو Python code، وعشان جي Streamlit عطاج Syntax Error.
+
+أسهل حل الحين: لا تصلحين سطر سطر. امسحي كل محتوى app.py وحطي النسخة النظيفة اللي جهزتها لج فقط:
+
+بعدها:
+
+افتحي الملف من الرابط.
+Ctrl + A ثم Ctrl + C.
+روحي GitHub → app.py → Edit.
+Ctrl + A وامسحي كل الموجود.
+الصقي الكود فقط.
+Commit changes.
+ارجعي Streamlit وسوي Refresh.
+ما المفروض يكون في الكود أي شرح عربي مثل اللي ظاهر في الصورة. العربي اللي ظهر لأن شرح المحادثة اننسخ بالغلط مع الكود.
+
+
+app_updated_network_security.py
+Code
+
+
+
+st.sidebar.markdown(
+    "## 🛡️ Security Console"
+)
+
+
+st.sidebar.success(
+    f"Access: {st.session_state.role}"
+)
+
+
+option = st.sidebar.radio(
+    "Navigation",
+    pages,
+    index=pages.index(
+        st.session_state.page
+    )
+)
+
+
+if option != st.session_state.page:
+
+    st.session_state.page = option
+
+    st.rerun()
+
+
+if st.sidebar.button(
+    "🚪 Logout"
+):
+
+    st.session_state.logged_in = False
+    st.session_state.role = None
+    st.session_state.page = "🏠 Dashboard"
+
+    st.rerun()
+
+
+st.sidebar.divider()
+
+
+if Path(
+    "intertec_systems_logo.jpg"
+).exists():
+
+    st.sidebar.image(
+        "intertec_systems_logo.jpg",
+        width=150
+    )
+
+
+st.sidebar.caption(
+    "INTERTEC SYSTEMS LLC"
+)
+
+
+st.sidebar.caption(
+    "Network Security Basics Project"
 )
 
 
 # =========================================================
-# SESSION STATE
+# DASHBOARD
 # =========================================================
 
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+if st.session_state.page == "🏠 Dashboard":
 
-if "role" not in st.session_state:
-    st.session_state.role = None
-
-if "page" not in st.session_state:
-    st.session_state.page = "🏠 Dashboard"
-
-
-# =========================================================
-# USERS
-# =========================================================
-
-USERS = {
-    "Staff": "Staff123",
-    "Admin": "Admin123",
-    "Manager": "Manager123"
-}
-
-
-# =========================================================
-# FIND PROJECT LOGO
-# =========================================================
-
-def find_project_logo():
-
-    preferred = [
-        "network_security_suite_logo.png",
-        "network_security_suite_logo.jpg",
-        "network_security_suite_logo.jpeg"
-    ]
-
-    for filename in preferred:
-        if Path(filename).exists():
-            return filename
-
-    matches = sorted(
-        glob.glob("network_security_suite_logo*")
+    hero(
+        "🛡️ Network Security Suite",
+        "Monitor. Analyze. Protect."
     )
 
-    if matches:
-        return matches[0]
 
-    return None
+    st.markdown(
+        "### ⚡ Quick Access"
+    )
 
 
-# =========================================================
-# DESIGN
-# =========================================================
+    q1, q2, q3, q4 = st.columns(4)
 
-st.markdown(
-    """
-<style>
 
-.stApp {
-    background:
-        radial-gradient(
-            circle at 88% 10%,
-            rgba(59,130,246,.20),
-            transparent 25%
-        ),
-        radial-gradient(
-            circle at 70% 80%,
-            rgba(139,92,246,.16),
-            transparent 30%
-        ),
-        linear-gradient(
-            135deg,
-            #f8fbff 0%,
-            #eef5ff 50%,
-            #faf7ff 100%
-        );
-}
+    with q1:
 
-.block-container {
-    padding-top: 1.3rem;
-    padding-bottom: 3rem;
-    max-width: 1250px;
-}
+        st.metric(
+            "🧰 Security Tools",
+            "9",
+            "Available"
+        )
 
-section[data-testid="stSidebar"] {
-    background:
-        linear-gradient(
-            180deg,
-            #eaf3ff 0%,
-            #eef2ff 50%,
-            #f5f3ff 100%
-        );
-    border-right: 1px solid #dbeafe;
-}
+        if st.button(
+            "🧰 View Tools",
+            key="quick_tools"
+        ):
 
-section[data-testid="stSidebar"] img {
-    background: white;
-    padding: 8px;
-    border-radius: 18px;
-    box-shadow:
-        0 8px 22px rgba(15,46,90,.10);
-}
+            go_to(
+                "🧰 Security Tools"
+            )
 
-h1, h2, h3 {
-    color: #102a56;
-}
+            st.rerun()
 
-.stButton > button {
-    width: 100%;
+
+    with q2:
+
+        st.metric(
+            "📡 Traffic Analysis",
+            "Wireshark",
+            "Local testing"
+        )
+
+        if st.button(
+            "📡 Open Wireshark",
+            key="quick_wireshark"
+        ):
+
+            go_to(
+                "📡 Traffic Monitoring"
+            )
+
+            st.rerun()
+
+
+    with q3:
+
+        st.metric(
+            "🛡️ Firewall",
+            "pfSense",
+            "Demo"
+        )
+
+        if st.button(
+            "🛡️ Open pfSense",
+            key="quick_firewall"
+        ):
+
+            go_to(
+                "🛡️ Firewall"
+            )
+
+            st.rerun()
+
+
+    with q4:
+
+        st.metric(
+            "🔎 Network Scan",
+            "Nmap",
+            "Local testing"
+        )
+
+        if st.button(
+            "🔎 Open Nmap",
+            key="quick_nmap"
+        ):
+
+            go_to(
+                "🔎 Network Scan"
+            )
+
+            st.rerun()
+
+

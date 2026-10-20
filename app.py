@@ -1,28 +1,462 @@
+import streamlit as st
+import ipaddress
+import hashlib
+import glob
+from pathlib import Path
 
-هيه
-تمام ✅ بنضيف Network Troubleshooting و Backup & Recovery على نفس برنامجج الحالي.
 
-حالياً عندج قائمة الصفحات فيها 9 عناصر تقريبًا وتنتهي بـ Security Report، والـDashboard يعرض 7 Security Tools. 
- 
+# =========================================================
+# PAGE SETUP
+# =========================================================
 
-بنخليها 9 Security Tools.
+st.set_page_config(
+    page_title="Intertec | Network Security",
+    page_icon="🛡️",
+    layout="wide"
+)
 
-1) أول شي عدلي pages
-دوري على:
 
-pages = [
-    "🏠 Dashboard",
-    "🧰 Security Tools",
-    "🔎 Network Scan",
-    "📡 Traffic Monitoring",
-    "🛡️ Firewall",
-    "⚠️ Vulnerability Check",
-    "🌐 IP Tools",
-    "🔑 Password & Hash Tools",
-    "📄 Security Report"
-]
+# =========================================================
+# SESSION STATE
+# =========================================================
 
-وخليه:
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "role" not in st.session_state:
+    st.session_state.role = None
+
+if "page" not in st.session_state:
+    st.session_state.page = "🏠 Dashboard"
+
+
+# =========================================================
+# USERS
+# =========================================================
+
+USERS = {
+    "Staff": "Staff123",
+    "Admin": "Admin123",
+    "Manager": "Manager123"
+}
+
+
+# =========================================================
+# FIND PROJECT LOGO
+# =========================================================
+
+def find_project_logo():
+
+    preferred = [
+        "network_security_suite_logo.png",
+        "network_security_suite_logo.jpg",
+        "network_security_suite_logo.jpeg"
+    ]
+
+    for filename in preferred:
+        if Path(filename).exists():
+            return filename
+
+    matches = sorted(
+        glob.glob("network_security_suite_logo*")
+    )
+
+    if matches:
+        return matches[0]
+
+    return None
+
+
+# =========================================================
+# DESIGN
+# =========================================================
+
+st.markdown(
+    """
+<style>
+
+.stApp {
+    background:
+        radial-gradient(
+            circle at 88% 10%,
+            rgba(59,130,246,.20),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 70% 80%,
+            rgba(139,92,246,.16),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fbff 0%,
+            #eef5ff 50%,
+            #faf7ff 100%
+        );
+}
+
+.block-container {
+    padding-top: 1.3rem;
+    padding-bottom: 3rem;
+    max-width: 1250px;
+}
+
+section[data-testid="stSidebar"] {
+    background:
+        linear-gradient(
+            180deg,
+            #eaf3ff 0%,
+            #eef2ff 50%,
+            #f5f3ff 100%
+        );
+    border-right: 1px solid #dbeafe;
+}
+
+section[data-testid="stSidebar"] img {
+    background: white;
+    padding: 8px;
+    border-radius: 18px;
+    box-shadow:
+        0 8px 22px rgba(15,46,90,.10);
+}
+
+h1, h2, h3 {
+    color: #102a56;
+}
+
+.stButton > button {
+    width: 100%;
+    min-height: 46px;
+    border: 0;
+    border-radius: 14px;
+    color: white;
+    font-weight: 700;
+    background:
+        linear-gradient(
+            90deg,
+            #1677ff,
+            #7047eb
+        );
+    box-shadow:
+        0 7px 18px rgba(37,99,235,.22);
+}
+
+.stButton > button:hover {
+    color: white;
+    transform: translateY(-3px);
+}
+
+div[data-testid="stMetric"] {
+    background: rgba(255,255,255,.90);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow:
+        0 10px 27px rgba(30,64,175,.12);
+}
+
+div[data-testid="stAlert"] {
+    border-radius: 17px;
+}
+
+
+/* HERO */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    border-radius: 25px;
+
+    background:
+        radial-gradient(
+            circle at 88% 25%,
+            rgba(59,130,246,.75),
+            transparent 27%
+        ),
+        linear-gradient(
+            115deg,
+            #071b46 0%,
+            #123d85 58%,
+            #7047eb 100%
+        );
+
+    box-shadow:
+        0 16px 38px rgba(30,64,175,.25);
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    right: -65px;
+    bottom: -140px;
+    background: rgba(255,255,255,.11);
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    right: 70px;
+    top: -60px;
+    background: rgba(255,255,255,.08);
+}
+
+.hero-company {
+    color: #bfdbfe;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.hero-title {
+    color: white;
+    font-size: 40px;
+    line-height: 1.15;
+    font-weight: 800;
+    margin-top: 8px;
+}
+
+.hero-subtitle {
+    color: #dbeafe;
+    font-size: 19px;
+    margin-top: 8px;
+}
+
+.hero-tags {
+    color: #bfdbfe;
+    font-size: 14px;
+    margin-top: 22px;
+}
+
+
+/* CARDS */
+
+.card {
+    border-radius: 20px;
+    padding: 21px;
+    min-height: 145px;
+    margin-bottom: 15px;
+
+    box-shadow:
+        0 8px 24px rgba(15,46,90,.09);
+
+    transition: all .25s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+        0 16px 32px rgba(37,99,235,.17);
+}
+
+.card-blue {
+    background:
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #dbeafe
+        );
+}
+
+.card-green {
+    background:
+        linear-gradient(
+            135deg,
+            #ecfdf5,
+            #d1fae5
+        );
+}
+
+.card-purple {
+    background:
+        linear-gradient(
+            135deg,
+            #f5f3ff,
+            #ede9fe
+        );
+}
+
+.card-orange {
+    background:
+        linear-gradient(
+            135deg,
+            #fff7ed,
+            #ffedd5
+        );
+}
+
+.card-pink {
+    background:
+        linear-gradient(
+            135deg,
+            #fff1f2,
+            #fce7f3
+        );
+}
+
+.card-cyan {
+    background:
+        linear-gradient(
+            135deg,
+            #ecfeff,
+            #cffafe
+        );
+}
+
+.card-title {
+    color: #102a56;
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.card-text {
+    color: #475569;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.footer-box {
+    margin-top: 25px;
+    padding: 22px;
+    border-radius: 20px;
+    color: white;
+
+    background:
+        linear-gradient(
+            100deg,
+            #102a56,
+            #164e9c,
+            #6339d7
+        );
+}
+
+</style>
+""",
+    unsafe_allow_html=True
+)
+
+
+# =========================================================
+# HERO FUNCTION
+# =========================================================
+
+def hero(title, subtitle):
+
+    st.markdown(
+        f"""
+<div class="hero">
+<div class="hero-company">INTERTEC SYSTEMS LLC</div>
+<div class="hero-title">{title}</div>
+<div class="hero-subtitle">{subtitle}</div>
+<div class="hero-tags">
+🛡️ Network Security &nbsp;&nbsp;
+📡 Traffic Analysis &nbsp;&nbsp;
+🔐 Secure Infrastructure
+</div>
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# CARD FUNCTION
+# =========================================================
+
+def card(icon, title, text, color):
+
+    st.markdown(
+        f"""
+<div class="card {color}">
+<div class="card-title">{icon} {title}</div>
+<div class="card-text">{text}</div>
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# LOGIN PAGE
+# =========================================================
+
+if not st.session_state.logged_in:
+
+    project_logo = find_project_logo()
+
+    if project_logo:
+
+        col1, col2, col3 = st.columns(
+            [1, 1, 1]
+        )
+
+        with col2:
+
+            st.image(
+                project_logo,
+                width=210
+            )
+
+
+    hero(
+        "🛡️ Network Security Suite",
+        "Secure access for Staff, Admin and Manager."
+    )
+
+
+    st.markdown(
+        "## 🔐 Login"
+    )
+
+
+    role = st.selectbox(
+        "Select Access Type",
+        [
+            "Staff",
+            "Admin",
+            "Manager"
+        ]
+    )
+
+
+    password = st.text_input(
+        f"{role} Password",
+        type="password"
+    )
+
+
+    if st.button(
+        f"Login as {role}"
+    ):
+
+        if password == USERS[role]:
+
+            st.session_state.logged_in = True
+            st.session_state.role = role
+            st.session_state.page = "🏠 Dashboard"
+
+            st.rerun()
+
+        else:
+
+            st.error(
+                f"Incorrect {role} password."
+            )
+
+
+    st.stop()
+
+
+# =========================================================
+# PAGES
+# =========================================================
 
 pages = [
     "🏠 Dashboard",
@@ -38,192 +472,42 @@ pages = [
     "📄 Security Report"
 ]
 
-2) غيري عدد الأدوات من 7 إلى 9
-دوري على:
 
-st.metric(
-    "🧰 Security Tools",
-    "7",
-    "Available"
-)
+if st.session_state.page not in pages:
 
-وغيري بس:
+    st.session_state.page = "🏠 Dashboard"
 
-"7"
 
-إلى:
+def go_to(page):
 
-"9"
+    if page in pages:
 
-3) أضيفي صفحة Network Troubleshooting
-حطي هذا قبل قسم Security Report:
+        st.session_state.page = page
+
+    else:
+
+        st.session_state.page = "🏠 Dashboard"
+
 
 # =========================================================
-# NETWORK TROUBLESHOOTING
+# SIDEBAR
 # =========================================================
 
-elif st.session_state.page == "🛠️ Network Troubleshooting":
+project_logo = find_project_logo()
 
-    hero(
-        "🛠️ Network Troubleshooting",
-        "Diagnose common network connectivity problems."
+
+if project_logo:
+
+    st.sidebar.image(
+        project_logo,
+        width=190
     )
 
-    st.info(
-        "This tool demonstrates a systematic troubleshooting process."
+else:
+
+    st.sidebar.markdown(
+        "### 🛡️ Network Security Suite"
     )
-
-    ip_status = st.selectbox(
-        "IP Address Status",
-        [
-            "Correct",
-            "Incorrect",
-            "Missing"
-        ]
-    )
-
-    gateway_status = st.selectbox(
-        "Default Gateway Status",
-        [
-            "Correct",
-            "Incorrect",
-            "Missing"
-        ]
-    )
-
-    dns_status = st.selectbox(
-        "DNS Status",
-        [
-
-4) أضيفي Backup & Recovery
-بعده مباشرة حطي:
-
-# =========================================================
-# BACKUP & RECOVERY
-# =========================================================
-
-elif st.session_state.page == "💾 Backup & Recovery":
-
-    hero(
-        "💾 Backup & Recovery",
-        "Create and download a simple network configuration backup."
-    )
-
-    st.info(
-        "Backup Method: Configuration Backup"
-    )
-
-    st.write(
-        "**Tool:** Network Security Suite"
-    )
-
-    router_ip = st.text_input(
-        "Router IP Address",
-        "192.168.10.1"
-    )
-
-    pc0_ip = st.text_input(
-        "PC0 IP Address",
-        "192.168.10.10"
-    )
-
-    pc1_ip = st.text_input(
-        "PC1 IP Address",
-        "192.168.10.20"
-    )
-
-    gateway = st.text_input(
-        "Default Gateway",
-
-بعد ما نضيف هذيل، برنامجج بيصير فيه 9 أدوات، ومن ضمنها المطلوب من Marwah:
-
-🛠️ Troubleshoot network connectivity ✅
-💾 Choose a backup method and tool ✅
-
-والـbackup method عندنا بيكون:
-
-Configuration Backup
-
-والـtool:
-
-Network Security Suite
-
-وهذا مناسب أكثر من إننا ندعي إن البرنامج يسوي backup حقيقي لأجهزة الشركة؛ هنا يكون demonstration واضح وآمن.
-
-بعد ما تلصقين هالجزئين وتشغلينه، طرشيلي صورة الـsidebar وأنا أقولج إذا ظهروا صح أو في شي يحتاج تعديل.
-
-عطني الكود كامل
-
-أكيد، جهزت لج الكود كامل بعد ما أضفت:
-
-🛠️ Network Troubleshooting
-💾 Backup & Recovery
-وغيرت عدد الأدوات من 7 إلى 9
-وضفت الأداتين في الـDashboard والـSidebar
-وضفتهم بعد في الـSecurity Report
-والكود مرّ Syntax Check بدون أخطاء.
-
-الكود مبني على نفس مشروعج الحالي وتصميمه، مو كود جديد من الصفر. 
-
-إذا تبين، عقب ما تحطينه في GitHub أقدر أمشي وياج خطوة بخطوة وين تلصقينه وكيف تحدثين Streamlit. 
-
-
-app_updated_network_security.py
-Code
-User attachment
-؟
-هيه، الخطأ واضح 👌
-
-في ملف app.py انحط كلام عربي عادي داخل الكود في السطر 3، ومعاه الإيموجي 😭، وPython حاول يشغله ككود، عشان جي طلع:
-
-SyntaxError: invalid character '😭'
-
-سوي جي بالضبط:
-
-افتحي app.py في GitHub.
-من أول الملف، لازم البداية تكون فقط بهالشكل:
-import streamlit as st
-import ipaddress
-import hashlib
-import glob
-from pathlib import Path
-
-امسحي أي كلام عربي أو شرح أو إيموجي موجود فوق أو بين هالأسطر، خصوصًا الجملة اللي ظاهرة في الخطأ.
-بعدها سوي Commit changes.
-ارجعي Streamlit وسوي Refresh.
-لا تمسحين باقي الكود، بس نظفي أول الأسطر.
-
-إذا تبين، طرشيلي صورة أول 10 أسطر من app.py وأنا أقولج بالضبط شو تمسحين.
-
-User attachment
-ليش الكود في عربي
-لأن اللي انلصق في app.py مو الكود بروحه 😭 — انلصق جزء من شرحي بالعربي مع الكود.
-
-واضح من الصورة إن الأسطر 30–55 فيها كلام مثل:
-
-Possible Cause + Recommended Solution
-Choose a backup method and tool
-شرح عربي عن الـbackup
-كلام عن إن الأدوات بتصير 9
-هذا كله شرح مني، مو Python code، وعشان جي Streamlit عطاج Syntax Error.
-
-أسهل حل الحين: لا تصلحين سطر سطر. امسحي كل محتوى app.py وحطي النسخة النظيفة اللي جهزتها لج فقط:
-
-بعدها:
-
-افتحي الملف من الرابط.
-Ctrl + A ثم Ctrl + C.
-روحي GitHub → app.py → Edit.
-Ctrl + A وامسحي كل الموجود.
-الصقي الكود فقط.
-Commit changes.
-ارجعي Streamlit وسوي Refresh.
-ما المفروض يكون في الكود أي شرح عربي مثل اللي ظاهر في الصورة. العربي اللي ظهر لأن شرح المحادثة اننسخ بالغلط مع الكود.
-
-
-app_updated_network_security.py
-Code
-
 
 
 st.sidebar.markdown(
@@ -386,3 +670,1100 @@ if st.session_state.page == "🏠 Dashboard":
             st.rerun()
 
 
+    st.write("")
+
+
+    st.markdown(
+        "## 🛡️ Security Tools"
+    )
+
+
+    # FIRST ROW
+
+    c1, c2, c3 = st.columns(3)
+
+
+    with c1:
+
+        card(
+            "🔎",
+            "Network Scan",
+            "Identify open ports and running services using Nmap.",
+            "card-blue"
+        )
+
+        if st.button(
+            "Open Network Scan →",
+            key="card_nmap"
+        ):
+
+            go_to(
+                "🔎 Network Scan"
+            )
+
+            st.rerun()
+
+
+    with c2:
+
+        card(
+            "📡",
+            "Traffic Monitoring",
+            "Review TCP, DNS and TLS network traffic using Wireshark.",
+            "card-green"
+        )
+
+        if st.button(
+            "Open Traffic Monitoring →",
+            key="card_wireshark"
+        ):
+
+            go_to(
+                "📡 Traffic Monitoring"
+            )
+
+            st.rerun()
+
+
+    with c3:
+
+        card(
+            "🛡️",
+            "Firewall",
+            "Review secure firewall rules using a pfSense demonstration.",
+            "card-pink"
+        )
+
+        if st.button(
+            "Open Firewall →",
+            key="card_firewall"
+        ):
+
+            go_to(
+                "🛡️ Firewall"
+            )
+
+            st.rerun()
+
+
+    # SECOND ROW
+
+    c4, c5, c6 = st.columns(3)
+
+
+    with c4:
+
+        card(
+            "⚠️",
+            "Vulnerability Check",
+            "Review potential security risks and recommendations.",
+            "card-orange"
+        )
+
+        if st.button(
+            "Open Vulnerability Check →",
+            key="card_vulnerability"
+        ):
+
+            go_to(
+                "⚠️ Vulnerability Check"
+            )
+
+            st.rerun()
+
+
+    with c5:
+
+        card(
+            "🌐",
+            "IP Tools",
+            "Validate IPv4 and IPv6 addresses.",
+            "card-purple"
+        )
+
+        if st.button(
+            "Open IP Tools →",
+            key="card_ip"
+        ):
+
+            go_to(
+                "🌐 IP Tools"
+            )
+
+            st.rerun()
+
+
+    with c6:
+
+        card(
+            "🔑",
+            "Password & Hash Tools",
+            "Check password strength and generate SHA-256 hashes.",
+            "card-cyan"
+        )
+
+        if st.button(
+            "Open Password Tools →",
+            key="card_password"
+        ):
+
+            go_to(
+                "🔑 Password & Hash Tools"
+            )
+
+            st.rerun()
+
+
+    c7, c8 = st.columns(2)
+
+
+    with c7:
+
+        card(
+            "🛠️",
+            "Network Troubleshooting",
+            "Diagnose common network connectivity problems and review recommended fixes.",
+            "card-orange"
+        )
+
+        if st.button(
+            "Open Network Troubleshooting →",
+            key="card_troubleshooting"
+        ):
+
+            go_to(
+                "🛠️ Network Troubleshooting"
+            )
+
+            st.rerun()
+
+
+    with c8:
+
+        card(
+            "💾",
+            "Backup & Recovery",
+            "Create and download a simple network configuration backup.",
+            "card-purple"
+        )
+
+        if st.button(
+            "Open Backup & Recovery →",
+            key="card_backup"
+        ):
+
+            go_to(
+                "💾 Backup & Recovery"
+            )
+
+            st.rerun()
+
+
+    st.markdown(
+        """
+<div class="footer-box">
+<b>🔐 Network Security Basics</b>
+<br><br>
+Learn to detect security risks,
+analyze network traffic,
+protect network services,
+and apply security recommendations.
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# =========================================================
+# SECURITY TOOLS
+# =========================================================
+
+elif st.session_state.page == "🧰 Security Tools":
+
+    hero(
+        "🧰 Security Tools",
+        "Choose a network security tool."
+    )
+
+
+    c1, c2, c3 = st.columns(3)
+
+
+    with c1:
+
+        card(
+            "🔎",
+            "Network Scan",
+            "Identify open ports and running services using Nmap.",
+            "card-blue"
+        )
+
+
+    with c2:
+
+        card(
+            "📡",
+            "Traffic Monitoring",
+            "Review TCP, DNS and TLS traffic using Wireshark.",
+            "card-green"
+        )
+
+
+    with c3:
+
+        card(
+            "🛡️",
+            "Firewall",
+            "Review firewall rules using a pfSense demonstration.",
+            "card-pink"
+        )
+
+
+    c4, c5, c6 = st.columns(3)
+
+
+    with c4:
+
+        card(
+            "⚠️",
+            "Vulnerability Check",
+            "Review potential security risks.",
+            "card-orange"
+        )
+
+
+    with c5:
+
+        card(
+            "🌐",
+            "IP Tools",
+            "Validate IPv4 and IPv6 addresses.",
+            "card-purple"
+        )
+
+
+    with c6:
+
+        card(
+            "🔑",
+            "Password & Hash Tools",
+            "Check password strength and SHA-256 hashing.",
+            "card-cyan"
+        )
+
+
+    c7, c8 = st.columns(2)
+
+
+    with c7:
+
+        card(
+            "🛠️",
+            "Network Troubleshooting",
+            "Diagnose common network connectivity problems.",
+            "card-orange"
+        )
+
+
+    with c8:
+
+        card(
+            "💾",
+            "Backup & Recovery",
+            "Create a simple network configuration backup.",
+            "card-purple"
+        )
+
+
+# =========================================================
+# NETWORK SCAN
+# =========================================================
+
+elif st.session_state.page == "🔎 Network Scan":
+
+    hero(
+        "🔎 Network Scan",
+        "Identify open ports and running services."
+    )
+
+
+    st.info(
+        "Tool: Nmap — Nmap testing was completed locally."
+    )
+
+
+    target = st.text_input(
+        "Target IP Address",
+        "127.0.0.1"
+    )
+
+
+    if st.button(
+        "▶ Start Demo Scan"
+    ):
+
+        st.success(
+            "✅ Demo scan completed."
+        )
+
+
+        st.code(
+            f"""Nmap Security Scan
+
+Target: {target}
+
+PORT       STATE    SERVICE
+135/tcp    open     msrpc
+445/tcp    open     microsoft-ds
+902/tcp    open     vmware-auth
+912/tcp    open     vmware-auth
+
+Scan Status: Completed
+"""
+        )
+
+
+        st.warning(
+            "Open ports should be reviewed "
+            "to confirm that they are required."
+        )
+
+
+    st.warning(
+        "⚠️ Only scan systems you own "
+        "or have permission to test."
+    )
+
+
+# =========================================================
+# TRAFFIC MONITORING
+# =========================================================
+
+elif st.session_state.page == "📡 Traffic Monitoring":
+
+    hero(
+        "📡 Traffic Monitoring",
+        "Analyze network traffic using Wireshark."
+    )
+
+
+    st.info(
+        "Wireshark testing was completed locally."
+    )
+
+
+    c1, c2, c3 = st.columns(3)
+
+
+    with c1:
+
+        card(
+            "🔵",
+            "TCP",
+            "Review TCP connections, ports and communication.",
+            "card-blue"
+        )
+
+
+    with c2:
+
+        card(
+            "🟢",
+            "DNS",
+            "Review DNS queries and domain requests.",
+            "card-green"
+        )
+
+
+    with c3:
+
+        card(
+            "🟣",
+            "TLS",
+            "Review encrypted TLS network traffic.",
+            "card-purple"
+        )
+
+
+    st.markdown(
+        "### 📡 Wireshark Filters"
+    )
+
+
+    filter_type = st.selectbox(
+        "Select traffic type",
+        [
+            "TCP",
+            "DNS",
+            "TLS",
+            "TCP SYN",
+            "Large TCP Packets"
+        ]
+    )
+
+
+    filters = {
+        "TCP": "tcp",
+        "DNS": "dns",
+        "TLS": "tls",
+        "TCP SYN": "tcp.flags.syn == 1",
+        "Large TCP Packets": "tcp.len > 10000"
+    }
+
+
+    if st.button(
+        "🔍 Show Filter"
+    ):
+
+        st.success(
+            f"{filter_type} filter:"
+        )
+
+        st.code(
+            filters[
+                filter_type
+            ]
+        )
+
+
+    st.markdown(
+        "### 🧪 Wireshark Capture Results"
+    )
+
+
+    r1, r2, r3 = st.columns(3)
+
+
+    with r1:
+
+        st.metric(
+            "🔵 TCP Packets",
+            "189",
+            "66.5% displayed"
+        )
+
+
+    with r2:
+
+        st.metric(
+            "🟢 DNS Packets",
+            "20",
+            "1.2% displayed"
+        )
+
+
+    with r3:
+
+        st.metric(
+            "🟣 TLS Packets",
+            "610",
+            "18.5% displayed"
+        )
+
+
+# =========================================================
+# FIREWALL
+# =========================================================
+
+elif st.session_state.page == "🛡️ Firewall":
+
+    hero(
+        "🛡️ Firewall Security",
+        "Manage and review network access rules."
+    )
+
+
+    st.warning(
+        "Tool: pfSense — Demonstration"
+    )
+
+
+    c1, c2, c3 = st.columns(3)
+
+
+    with c1:
+
+        card(
+            "✅",
+            "HTTPS",
+            "ALLOW — TCP Port 443",
+            "card-green"
+        )
+
+
+    with c2:
+
+        card(
+            "✅",
+            "DNS",
+            "ALLOW — Port 53",
+            "card-blue"
+        )
+
+
+    with c3:
+
+        card(
+            "🚫",
+            "Telnet",
+            "BLOCK — TCP Port 23",
+            "card-pink"
+        )
+
+
+    st.markdown(
+        "### 🔥 Firewall Rule Tester"
+    )
+
+
+    service = st.selectbox(
+        "Select Service",
+        [
+            "HTTPS",
+            "DNS",
+            "SSH",
+            "HTTP",
+            "Telnet"
+        ]
+    )
+
+
+    firewall_rules = {
+        "HTTPS": ("443", "ALLOW"),
+        "DNS": ("53", "ALLOW"),
+        "SSH": ("22", "ALLOW"),
+        "HTTP": ("80", "REVIEW"),
+        "Telnet": ("23", "BLOCK")
+    }
+
+
+    if st.button(
+        "🛡️ Check Firewall Rule"
+    ):
+
+        port, action = firewall_rules[service]
+
+
+        st.write(
+            f"**Service:** {service}"
+        )
+
+
+        st.write(
+            f"**Port:** {port}"
+        )
+
+
+        if action == "ALLOW":
+
+            st.success(
+                "✅ ALLOW"
+            )
+
+
+        elif action == "BLOCK":
+
+            st.error(
+                "🚫 BLOCK"
+            )
+
+
+        else:
+
+            st.warning(
+                "⚠️ REVIEW"
+            )
+
+
+# =========================================================
+# VULNERABILITY CHECK
+# =========================================================
+
+elif st.session_state.page == "⚠️ Vulnerability Check":
+
+    hero(
+        "⚠️ Vulnerability Check",
+        "Review potential network security risks."
+    )
+
+
+    if st.button(
+        "🔍 Run Demo Vulnerability Check"
+    ):
+
+        st.warning(
+            "⚠️ Port 445 — File sharing service may be exposed."
+        )
+
+        st.success(
+            "Recommendation: Restrict access to trusted devices."
+        )
+
+
+        st.warning(
+            "⚠️ Telnet Port 23 — Unencrypted remote access."
+        )
+
+        st.success(
+            "Recommendation: Block Telnet and use SSH."
+        )
+
+
+        st.warning(
+            "⚠️ HTTP Port 80 — Unencrypted web traffic."
+        )
+
+        st.success(
+            "Recommendation: Use HTTPS/TLS."
+        )
+
+
+# =========================================================
+# IP TOOLS
+# =========================================================
+
+elif st.session_state.page == "🌐 IP Tools":
+
+    hero(
+        "🌐 IP Address Analyzer",
+        "Validate and analyze IPv4 and IPv6 addresses."
+    )
+
+
+    ip_input = st.text_input(
+        "Enter IP Address",
+        "192.168.1.1"
+    )
+
+
+    if st.button(
+        "🌐 Analyze IP"
+    ):
+
+        try:
+
+            address = ipaddress.ip_address(
+                ip_input.strip()
+            )
+
+
+            st.success(
+                "✅ Valid IP Address"
+            )
+
+
+            c1, c2, c3 = st.columns(3)
+
+
+            with c1:
+
+                st.metric(
+                    "IP Version",
+                    f"IPv{address.version}"
+                )
+
+
+            with c2:
+
+                network_type = (
+                    "Private"
+                    if address.is_private
+                    else "Public"
+                )
+
+                st.metric(
+                    "Network Type",
+                    network_type
+                )
+
+
+            with c3:
+
+                st.metric(
+                    "Status",
+                    "Valid"
+                )
+
+
+        except ValueError:
+
+            st.error(
+                "❌ Invalid IP address."
+            )
+
+
+# =========================================================
+# PASSWORD & HASH
+# =========================================================
+
+elif st.session_state.page == "🔑 Password & Hash Tools":
+
+    hero(
+        "🔑 Password & Hash Tools",
+        "Test password strength and SHA-256 hashing."
+    )
+
+
+    st.warning(
+        "⚠️ Use a sample password only. "
+        "Do not enter your real password."
+    )
+
+
+    password = st.text_input(
+        "Sample Password",
+        type="password"
+    )
+
+
+    c1, c2 = st.columns(2)
+
+
+    with c1:
+
+        if st.button(
+            "🔐 Check Password Strength"
+        ):
+
+            if not password:
+
+                st.warning(
+                    "Enter a sample password first."
+                )
+
+            else:
+
+                score = 0
+
+                if len(password) >= 8:
+                    score += 1
+
+                if any(
+                    c.isupper()
+                    for c in password
+                ):
+                    score += 1
+
+                if any(
+                    c.islower()
+                    for c in password
+                ):
+                    score += 1
+
+                if any(
+                    c.isdigit()
+                    for c in password
+                ):
+                    score += 1
+
+                if any(
+                    not c.isalnum()
+                    for c in password
+                ):
+                    score += 1
+
+
+                if score <= 2:
+
+                    st.error(
+                        "🔴 Password Strength: Weak"
+                    )
+
+
+                elif score <= 4:
+
+                    st.warning(
+                        "🟠 Password Strength: Medium"
+                    )
+
+
+                else:
+
+                    st.success(
+                        "🟢 Password Strength: Strong"
+                    )
+
+
+    with c2:
+
+        if st.button(
+            "🔑 Generate SHA-256 Hash"
+        ):
+
+            if not password:
+
+                st.warning(
+                    "Enter a sample password first."
+                )
+
+            else:
+
+                hashed_password = hashlib.sha256(
+                    password.encode()
+                ).hexdigest()
+
+
+                st.success(
+                    "✅ SHA-256 Hash Generated"
+                )
+
+
+                st.code(
+                    hashed_password
+                )
+
+
+# =========================================================
+# NETWORK TROUBLESHOOTING
+# =========================================================
+
+elif st.session_state.page == "🛠️ Network Troubleshooting":
+
+    hero(
+        "🛠️ Network Troubleshooting",
+        "Diagnose common network connectivity problems."
+    )
+
+    st.info(
+        "This tool demonstrates a systematic troubleshooting process."
+    )
+
+    ip_status = st.selectbox(
+        "IP Address Status",
+        ["Correct", "Incorrect", "Missing"]
+    )
+
+    gateway_status = st.selectbox(
+        "Default Gateway Status",
+        ["Correct", "Incorrect", "Missing"]
+    )
+
+    dns_status = st.selectbox(
+        "DNS Status",
+        ["Working", "Not Working"]
+    )
+
+    ping_status = st.selectbox(
+        "Ping Test Result",
+        ["Successful", "Request Timed Out", "Destination Unreachable"]
+    )
+
+    if st.button("🔍 Diagnose Network"):
+
+        problems = []
+
+        if ip_status != "Correct":
+            problems.append("Incorrect or missing IP configuration.")
+
+        if gateway_status != "Correct":
+            problems.append("Incorrect or missing default gateway.")
+
+        if dns_status == "Not Working":
+            problems.append("DNS service may not be configured correctly.")
+
+        if ping_status != "Successful":
+            problems.append("Network connectivity problem detected.")
+
+        if not problems:
+            st.success("✅ No common connectivity issue detected.")
+        else:
+            st.error("⚠️ Network issue detected.")
+            st.subheader("Possible Causes")
+            for problem in problems:
+                st.write(f"• {problem}")
+
+            st.subheader("Recommended Troubleshooting Steps")
+            st.write("1. Check physical network connections.")
+            st.write("2. Verify the IP address and subnet mask.")
+            st.write("3. Verify the default gateway.")
+            st.write("4. Check DNS settings.")
+            st.write("5. Test connectivity using ping.")
+            st.write("6. Check the router interface status.")
+
+    st.caption(
+        "This online tool is a troubleshooting demonstration and does not directly test external devices."
+    )
+
+
+# =========================================================
+# BACKUP & RECOVERY
+# =========================================================
+
+elif st.session_state.page == "💾 Backup & Recovery":
+
+    hero(
+        "💾 Backup & Recovery",
+        "Create and download a simple network configuration backup."
+    )
+
+    st.info("Backup Method: Configuration Backup")
+    st.write("**Tool:** Network Security Suite")
+
+    router_ip = st.text_input("Router IP Address", "192.168.10.1")
+    pc0_ip = st.text_input("PC0 IP Address", "192.168.10.10")
+    pc1_ip = st.text_input("PC1 IP Address", "192.168.10.20")
+    gateway = st.text_input("Default Gateway", "192.168.10.1")
+
+    firewall_backup = st.text_area(
+        "Firewall Rules",
+        """ALLOW HTTPS - Port 443
+ALLOW DNS - Port 53
+ALLOW SSH - Port 22
+BLOCK Telnet - Port 23"""
+    )
+
+    if st.button("💾 Create Backup"):
+
+        backup_data = f"""NETWORK SECURITY CONFIGURATION BACKUP
+
+Router IP: {router_ip}
+PC0 IP: {pc0_ip}
+PC1 IP: {pc1_ip}
+Default Gateway: {gateway}
+
+Firewall Rules:
+{firewall_backup}
+
+Backup Method: Configuration Backup
+Tool: Network Security Suite
+"""
+
+        st.success("✅ Backup created successfully.")
+
+        st.download_button(
+            label="⬇️ Download Backup",
+            data=backup_data,
+            file_name="network_security_backup.txt",
+            mime="text/plain"
+        )
+
+    st.warning(
+        "Keep backup files in a secure location and restrict access to authorized users."
+    )
+
+
+# =========================================================
+# SECURITY REPORT
+# =========================================================
+
+elif st.session_state.page == "📄 Security Report":
+
+    hero(
+        "📄 Security Report",
+        "Project findings and security recommendations."
+    )
+
+
+    c1, c2 = st.columns(2)
+
+
+    with c1:
+
+        card(
+            "🔎",
+            "Network Scan",
+            "Nmap was used locally to identify open ports and running services.",
+            "card-blue"
+        )
+
+
+        card(
+            "🛡️",
+            "Firewall",
+            "pfSense firewall rules are presented as a demonstration.",
+            "card-pink"
+        )
+
+
+        card(
+            "🔑",
+            "Password Security",
+            "Password strength and SHA-256 hashing demonstration.",
+            "card-purple"
+        )
+
+
+    with c2:
+
+        card(
+            "📡",
+            "Traffic Monitoring",
+            "Wireshark was used locally with TCP, DNS and TLS filters.",
+            "card-green"
+        )
+
+
+        card(
+            "🌐",
+            "IP Tools",
+            "IPv4 and IPv6 address validation.",
+            "card-cyan"
+        )
+
+
+        card(
+            "⚠️",
+            "Security Findings",
+            "Potential risks are reviewed with security recommendations.",
+            "card-orange"
+        )
+
+
+    st.markdown("### 🛠️ Network Troubleshooting")
+    st.write(
+        "A troubleshooting demonstration was added to review IP, gateway, DNS, ping, and router interface status."
+    )
+
+    st.markdown("### 💾 Backup & Recovery")
+    st.write(
+        "Configuration Backup was selected as the backup method using the Network Security Suite."
+    )
+
+    st.markdown(
+        "## 🛡️ Security Recommendations"
+    )
+
+
+    st.success(
+        "✅ Use HTTPS/TLS for secure communication."
+    )
+
+    st.success(
+        "✅ Block Telnet and use SSH."
+    )
+
+    st.success(
+        "✅ Restrict unnecessary open ports."
+    )
+
+    st.success(
+        "✅ Apply appropriate firewall rules."
+    )
+
+    st.success(
+        "✅ Monitor network traffic regularly."
+    )
+
+    st.success(
+        "✅ Use strong passwords."
+    )
+
+
+    st.info(
+        "Nmap and Wireshark testing was completed locally. "
+        "The online Nmap and pfSense sections are demonstrations."
+    )
+
+
+    st.markdown(
+        """
+<div class="footer-box">
+<b>INTERTEC SYSTEMS LLC</b>
+<br><br>
+Network Security Basics Project
+<br>
+Monitor • Analyze • Protect
+</div>
+""",
+        unsafe_allow_html=True
+    )

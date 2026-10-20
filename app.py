@@ -321,3 +321,35 @@ st.markdown(
             #faf7ff 100%
         );
 }
+
+.block-container {
+    padding-top: 1.3rem;
+    padding-bottom: 3rem;
+    max-width: 1250px;
+}
+
+section[data-testid="stSidebar"] {
+    background:
+        linear-gradient(
+            180deg,
+            #eaf3ff 0%,
+            #eef2ff 50%,
+            #f5f3ff 100%
+        );
+    border-right: 1px solid #dbeafe;
+}
+
+section[data-testid="stSidebar"] img {
+    background: white;
+    padding: 8px;
+    border-radius: 18px;
+    box-shadow:
+        0 8px 22px rgba(15,46,90,.10);
+}
+
+h1, h2, h3 {
+    color: #102a56;
+}
+
+.stButton > button {
+    width: 100%;
